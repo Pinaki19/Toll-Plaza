@@ -25,11 +25,12 @@ var dict = {
   login:Go_Login,
   help: expandMessagesDropdown,
   logout:Logout,
-
+  signup:Go_SignUp,
 };
 
 function search(){
   var searched = document.getElementById('Search_bar').value;
+  
   if(searched.length>0){
     event.preventDefault();
     if (searched.length<=15 && dict.hasOwnProperty(searched.toLowerCase())){
@@ -46,51 +47,53 @@ function search(){
   }
 }
 
-
-var TRange = null;
 function findString(str) {
-  if (parseInt(navigator.appVersion) < 4) return;
-  var strFound;
-  var flag=1;
+  var found = false;
+
   if (window.find) {
+    // Modern browsers that support window.find
+    found = window.find(str);
+  } else {
+    // Fallback for older browsers
+    var body = document.body;
+    var textNode = document.createTextNode(str);
+    var searchRange, range, span;
 
-    // CODE FOR BROWSERS THAT SUPPORT window.find
-    strFound = self.find(str);
-    if (strFound && self.getSelection && !self.getSelection().anchorNode) {
-      strFound = self.find(str)
-    }
-    if (!strFound) {
-      strFound = self.find(str, 0, 1)
-      while (self.find(str, 0, 1)) continue;
-    }
-    flag=1;
-  }
-  else if (navigator.appName.indexOf("Microsoft") != -1) {
+    // Create a temporary element to wrap the found text
+    span = document.createElement('span');
+    span.className = 'highlighted-text';
+    span.appendChild(textNode);
 
-    // EXPLORER-SPECIFIC CODE
+    // Append the temporary element to the body
+    body.appendChild(span);
 
-    if (TRange != null) {
-      TRange.collapse(false)
-      strFound = TRange.findText(str)
-      if (strFound) TRange.select()
+    // Create a range to search for the text
+    searchRange = document.createRange();
+    searchRange.selectNodeContents(body);
+
+    // Start the search from the beginning of the document
+    range = searchRange.cloneRange();
+    range.collapse(true);
+
+    // Perform the search
+    while (range.findText(str)) {
+      range.surroundContents(span.cloneNode(true));
+      found = true;
     }
-    if (TRange == null || strFound == 0) {
-      TRange = self.document.body.createTextRange()
-      strFound = TRange.findText(str)
-      if (strFound) TRange.select()
-    }
+
+    // Clean up temporary elements
+    body.normalize();
+    span.parentNode.replaceChild(textNode, span);
   }
-  else if (navigator.appName == "Opera") {
-    alert("Opera browsers not supported, sorry...")
-    return;
-  }
- if (!strFound) {
-    if(str.length>10){
-      showPopup(str.substring(4)+'...')
-    }else{
+
+  if (!found) {
+    // Handle not found
+    if (str.length > 10) {
+      showPopup(str.substring(0,5) + '...');
+    } else {
       showPopup(str);
     }
-    document.getElementById('Search_bar').value='';
+    document.getElementById('Search_bar').value = '';
   }
 }
 
@@ -236,7 +239,9 @@ function Go_home(){
 function Go_Login() {
   location.href = '/profile';
 }
-
+function Go_SignUp() {
+  location.href = '/Sign_up';
+}
 
 function Go_profile() {
   Go_Login();
@@ -249,4 +254,59 @@ function Logout(){
     Go_Login();
   }
 }
+
+function getFirebaseErrorMessage (code) {
+  var message = null;
+  console.log(code);
+  switch (code) {
+    case "auth/user-not-found":
+      message = 'USER NOT FOUND';
+      break;
+    case "auth/email-already-in-use":
+      message = 'EMAIL ALREADY IN USE';
+      break;
+    case "auth/internal-error":
+      message = 'INTERNAL ERROR';
+      break;
+    case "auth/invalid-login-credentials":
+      message = 'INVALID LOGIN CREDENTIALS';
+      break;
+    case "auth/invalid-email":
+      message = 'INVALID EMAIL FORMAT';
+      break;
+    case "auth/invalid-password":
+      message = 'INVALID PASSWORD FORMAT';
+      break;
+    case "auth/weak-password":
+      message = 'Password Too Weak! Use Atleast 6 characters';
+      break;
+    default:
+      message = 'Something Went Wrong! Try Again';
+      break;
+  }
+  return message;
+}
+
+
+function validateMobile() {
+  var mobileInput = document.getElementById("mobile") || document.getElementById("editMobile");
+  var mobileValue = mobileInput.value;
+  if (mobileValue.length > 0 && mobileValue.length < 12 && mobileValue.length!=10) {
+    alert("Provide a 10/12 digit mobile number!");
+    mobileInput.value = "";
+    return false;
+  }
+  // Regular expression to match valid mobile number format
+  var mobileRegex = /^(\+\d{1,2}\s?)?\d{10}$/;
+
+
+  if (mobileValue.length > 0 && !mobileRegex.test(mobileValue)) {
+    alert("Invalid mobile number format.Use 10/12 digits Only");
+    mobileInput.value = "";
+    return false;
+  }
+
+  return true;
+}
+
 

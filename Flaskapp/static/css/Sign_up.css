@@ -26,22 +26,23 @@
  #Right_wrong
  {
     position: absolute; 
-    top:10px;
-    bottom: 5px;
-    right:12px;
-    height: 8px;
-    width: 8px;
+    top:-2px;
+    font-size: 18px;
+    bottom: 25px;
+    right:24px;
+    height: 4px !important;
+    width: 4px !important;
     color: black ;
     z-index: 100 ;
  }
-
+  
  .signup-form {
     display: flex;
     flex-direction: row;
      width: max-content;
      margin: 0 auto;
      padding: 30px 0;
-     margin-top: 40px;
+     
     
      
  }
@@ -135,7 +136,7 @@
      text-decoration: underline;
  }
 
- .signup-form .fa {
+ .signup-form .fa ,.bi{
      font-size: 21px;
  }
 
@@ -143,8 +144,12 @@
      font-size: 18px;
      
  }
+ .signup-form .bi-gender-ambiguous {
+    padding-right: 5px;
+ }
+ 
 
- .fa{
+ .fa,.bi{
    padding-top: 8px;
    color:#ffffff;
  }
