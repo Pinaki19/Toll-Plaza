@@ -100,10 +100,14 @@ def get_profile_image():
             if user['Defualt_Profile']:
                 # If the user has a default profile picture, use the 'Profile_Url' from the database
                 return jsonify({"success": True, 'Default': True, "profile_url": user['Profile_Url']})
+            elif 'image_id' not in user:
+                return jsonify({"success": True, 'Default': False, "profile_url": user['Profile_Url']})
+
             else:
                 # If the user has a custom profile picture, use their profile image URL as before
                 # Convert ObjectId to string
                 profile_url = str(user["image_id"])
+                print(profile_url)
                 return jsonify({"success": True, 'Default': False, "profile_url": profile_url})
 
         return jsonify({"success": False, "message": "Profile image not found for this user."})
@@ -132,8 +136,9 @@ def remove_profile_image():
                 {"Email": email},
                 {"$unset": {"image_id": ""}}
             )
-            db.UserData.update_one(
-                {"Email": email}, {"$set": {"Defualt_Profile": True}})
+            if user_data['Gender'] != 'others':
+                db.UserData.update_one(
+                    {"Email": email}, {"$set": {"Defualt_Profile": True}})
             return jsonify({"success": True, "message": "Profile picture removed successfully."})
         else:
             return jsonify({"success": False, "message": "No profile picture found for the user."})
@@ -147,17 +152,6 @@ def index():
   return render_template('Home.html')
 
 
-@app.route('/Sign_up', methods=['GET'])
-def Sign_up():
-  if 'email' in session:
-    return redirect(url_for('profile'))
-  else:
-    return render_template("Sign_up.html")
-
-
-@app.route('/Log_in',methods=['GET'])
-def Log_in():
-  return render_template('Log_in.html'),200
 
 @app.route('/Register',methods=['POST'])
 def Register_user():
@@ -173,11 +167,11 @@ def Register_user():
     Recieved.update({"Defualt_Profile": True,
                     'Profile_Url': 'https://img.freepik.com/free-psd/3d-illustration-person-with-glasses_23-2149436185.jpg'})
   else:
-    Recieved.update({"Defualt_Profile": True,
-                    'Profile_Url': 'https://img.freepik.com/free-vector/gender-identity-concept_23-2148539311.jpg'})
+    Recieved.update({"Defualt_Profile": False,
+                    'Profile_Url': '650ed668b0d448411c3e2e50'})
   
   Recieved.update(
-      {'IsAdmin':False,'RegistrationDate': datetime.now(), 'Address': '******, -------- , *******'})
+      {'IsAdmin':False,'RegistrationDate': datetime.now(), 'Address': ' '})
   db.UserData.insert_one(Recieved)
   return jsonify("Sucesss")
   
@@ -199,7 +193,7 @@ def Edit_account():
         new_name = received.get('name')
         new_mobile = received.get('mobile')
         new_address = received.get('address')
-        if (len(new_name) < 4 or len(new_name) > 40 or len(new_address)>100):
+        if (len(new_name) < 4 or len(new_name) > 40 or len(new_address)>100 or len(new_mobile)>=15):
             abort(404)
         
         update_data = {}

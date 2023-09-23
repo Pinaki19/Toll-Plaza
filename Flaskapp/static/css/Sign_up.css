@@ -1,172 +1,175 @@
- body  {
-     color: #5acf28;
-     display: flex;
-     flex-direction:column;
-     background-image: url('../Assets/Sign_up.jpg');
-     background-repeat: no-repeat;
-      background-size:cover;
-     font-family: 'Roboto', sans-serif;
- }
+#signupModal{
 
- .form-control,
- .form-control:focus,
- .input-group-addon {
-     border-color: #e1e1e1;
-     border-radius: 5px;
- }
-
- .form-control,
- .btn {
-     border-radius: 8px;
-     
- }
-
-
- #eye,
- #Right_wrong
- {
-    position: absolute; 
-    top:-2px;
-    font-size: 18px;
-    bottom: 25px;
-    right:24px;
-    height: 4px !important;
-    width: 4px !important;
-    color: black ;
-    z-index: 100 ;
- }
-  
- .signup-form {
-    display: flex;
-    flex-direction: row;
-     width: max-content;
-     margin: 0 auto;
-     padding: 30px 0;
-     
+    .form-control,
+        .form-control:focus,
+        .input-group-addon {
+            border-color: #e1e1e100;
+            border-radius: 5px;
+        }
     
-     
- }
-
- .signup-form form {
-    display: flex;
-    flex-direction: column;
-     color: #ffffff;
-     border-radius: 10px;
-     margin-bottom: 15px;
-     background:#3e3a3aa7;
-     background-blend-mode:hue;
-     box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
-     padding: 30px;
-     
- }
-
- .signup-form h2 {
-     color: #eb8211;
-     font-weight: bold;
-     margin-top: 0;
- }
-
- .signup-form hr {
-     margin: 0 -30px 20px;
- }
-
- .signup-form .form-group {
-     margin-bottom: 20px;
- }
-
- .signup-form label {
-     font-weight: normal;
-     font-size: 13px;
- }
-
- .signup-form .form-control {
-     min-height: 38px;
-     box-shadow: none !important;
-     border-radius: 5px;
- }
-
- .signup-form .input-group-addon {
-     max-width: 42px;
-     width: 25px;;
-     text-align: center;
-     background-color: #64b4e9;
- }
-
- .signup-form input[type="checkbox"] {
-     margin-top: 2px;
- }
-
- .signup-form .btn {
-     font-size: 16px;
-     font-weight: bold;
-     background: #19aa8d;
-     border: none;
-     min-width: 140px;
-     
- }
- .signup-form .form-group #Sign-up{
-    position: relative;
-    left:90px;
- }
-
- .signup-form .btn:hover,
- .signup-form .btn:focus {
-     background: #df9148ec;
-     transform: scale(1.05);
-     outline: none;
- }
-
- .signup-form a {
-     color: #fff;
-     text-decoration: underline;
- }
-
- .signup-form a:hover {
-     text-decoration: none;
- }
-
- .signup-form form a {
-     color: #33f929fc;
-     text-decoration: none;
-     font-weight:bolder;
-     
- }
-
- .signup-form form a:hover {
-     text-decoration: underline;
- }
-
- .signup-form .fa ,.bi{
-     font-size: 21px;
- }
-
- .signup-form .fa-paper-plane {
-     font-size: 18px;
-     
- }
- .signup-form .bi-gender-ambiguous {
-    padding-right: 5px;
- }
+        .form-control,
+        .btn {
+            border-radius: 8px;
+        }
+    
+        .modal-content {
+            padding: 0px;
+            margin: 0px;
+            border-radius: 10px !important;
+        }
+        
+    
+        #form #eye1,
+        #Right_wrong {
+            position: absolute;
+            top: -2px;
+            font-size: 18px;
+            bottom: 25px;
+            right: 24px;
+            height: 4px !important;
+            width: 4px !important;
+            color: black;
+            z-index: 100;
+        }
+    
+    
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px !important;
+    
+        }
+    
+    
+        .modal-body form {
+            display: flex;
+            flex-direction: column;
+            color: #ffffff;
+            border-radius: 10px;
+            background: #1a1717e2;
+            background-blend-mode: hue;
+            box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+    
+        }
+    
+        .modal-body h2 {
+            color: #eb8211;
+            font-weight: bold;
+            margin-top: 0;
+        }
+    
+        .modal-body hr {
+            margin: 0 -30px 20px;
+        }
+    
+        .modal-body .form-group {
+            margin-bottom: 20px;
+        }
+    
+        .modal-body label {
+            font-weight: normal;
+            font-size: 13px;
+        }
+    
+        .modal-body .form-control {
+            min-height: 38px;
+            box-shadow: none !important;
+            border-radius: 5px;
+        }
+    
+        .modal-body .input-group-addon {
+            max-width: 42px;
+            width: 25px;
+            ;
+            text-align: center;
+            background-color: #64b4e9;
+        }
+    
+        .modal-body input[type="checkbox"] {
+            margin-top: 2px;
+        }
+    
+        .modal-body .btn {
+            font-size: 16px;
+            font-weight: bold;
+            background: #19aa8d;
+            border: none;
+            min-width: 140px;
+    
+        }
+    
+        .modal-body .form-group #Sign-up,
+        #Sign_up_btn {
+            text-align: center;
+            display: flexbox;
+            font-style: normal;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    
+        .modal-body .btn:hover,
+        .modal-body .btn:focus {
+            background: #df9148ec;
+            transform: scale(1.05);
+            outline: none;
+        }
+    
+        .modal-body a {
+            color: #fff;
+            text-decoration: underline;
+        }
+    
+        .modal-body a:hover {
+            text-decoration: none;
+        }
+    
+        .modal-body form a {
+            color: #33f929fc;
+            text-decoration: none;
+            font-weight: bolder;
+    
+        }
+    
+        .modal-body form a:hover {
+            text-decoration: underline;
+        }
+    
+        .modal-body .fa,
+        .bi {
+            font-size: 21px;
+        }
+    
+        .modal-body .fa-paper-plane {
+            font-size: 18px;
+    
+        }
+    
+        .modal-body .bi-gender-ambiguous {
+            padding-right: 5px;
+        }
+    
+    
+        .fa,
+        .bi {
+            padding-top: 8px;
+            color: #ffffff;
+        }
+    
+        .modal-body .fa-check {
+            color: #535351;
+            left: 9px;
+            top: 9px;
+            font-size: 11px;
+            position: absolute;
+        }
+    
+        .modal-body #form #Login {
+            background-color: #519cf1;
+            margin-left: 8px;
+        }
+    
+        #form #Agreement {
+            background-color: #0e0e0e;
+        }
+}
  
-
- .fa,.bi{
-   padding-top: 8px;
-   color:#ffffff;
- }
-
- .signup-form .fa-check {
-     color: #535351;
-     left: 9px;
-     top: 9px;
-     font-size: 11px;
-     position: absolute;
- }
-
- #Login {
-    background-color: #519cf1;
-    margin-left: 8px ;
- }
-
- #Agreement{
-    background-color: #0e0e0e;
- }

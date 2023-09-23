@@ -2,16 +2,15 @@ async function check_login(){
   let response=await fetch('/Check_login');
   if(!response.ok){
     document.getElementById('Sign_up').innerHTML="Sign Up";
-    document.getElementById('Login').innerHTML='Login';
+    document.getElementById('Login').innerHTML = 'Login';
+  }
+  else{
+    document.getElementById('Login').remove();
+    document.getElementById('Sign_up').remove();
   }
   
 }
 
-var nav=document.getElementsByClassName("navbar-nav");
-for(let i=0;i<nav.length;i++){
-  nav[i].style.color='white';
-  console.log(nav[i]);
-}
 
 var dict = {
   messages: expandMessagesDropdown,
