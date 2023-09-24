@@ -3,11 +3,16 @@ async function check_login(){
   if(!response.ok){
     document.getElementById('Sign_up').innerHTML="Sign Up";
     document.getElementById('Login').innerHTML = 'Login';
+    document.getElementById('Profile').addEventListener('click', showLoginModal);
+    return false;
   }
   else{
     document.getElementById('Login').remove();
     document.getElementById('Sign_up').remove();
+    document.getElementById('Profile').href = '/profile';
+    return true;
   }
+  
   
 }
 
@@ -238,9 +243,6 @@ function Go_home(){
 function Go_Login() {
   location.href = '/profile';
 }
-function Go_SignUp() {
-  location.href = '/Sign_up';
-}
 
 function Go_profile() {
   Go_Login();
@@ -308,4 +310,40 @@ function validateMobile() {
   return true;
 }
 
+
+function show_super_admin_content(){
+
+
+  show_admin_content();
+}
+
+function show_admin_content(){
+
+
+  show_user_content();
+}
+
+function create_template(Name,Desc,Href){
+  var elem = document.createElement('div');
+  elem.setAttribute('class', "col-sm-6 mb-3");
+  var ch1 = document.createElement('div');
+  ch1.setAttribute('class', "card h-100");
+  var ch2 = document.createElement('div');
+  ch2.setAttribute('class', "card-body");
+  ch2.innerHTML = `<h6 class="d-flex align-items-center mb-3">${Name}</h6>
+  <p>${Desc}</p><hr style="padding:0px;margin:0px;"><div style="margin-top:5px;padding:0px;text-align:right;">
+  <a class="btn btn-info btn-md" href=${Href} style=" background-color:lightgreen;">Go</a></div>`;
+  ch1.appendChild(ch2);
+  elem.appendChild(ch1);
+  return elem;
+}
+
+function show_user_content(){
+    var elem=create_template('New','Some Description!');
+    document.getElementById('Content-Div').appendChild(elem);
+  var elem2 = create_template('New2', 'More Description!');
+    document.getElementById('Content-Div').appendChild(elem2);
+    var elem3 = create_template('New3','Bigggggggggggggg description');
+    document.getElementById('Content-Div').appendChild(elem3);
+}
 

@@ -15,10 +15,6 @@
     <div class="container">
     <div class="main-body">
     
-          <!-- Breadcrumb -->
-          
-          <!-- /Breadcrumb -->
-    
           <div class="row gutters-sm">
             <div class="col-md-4 mb-3">
               <div class="card">
@@ -33,10 +29,14 @@
                      
                     <div class="mt-3">
                       <h4>{{ user.Name }}</h4>
-                      {% if  user.IsAdmin %}
+                      {% if  user.IsSuperAdmin %}
+                      <hr>
+                      <h4 style='color:red;'>SUPER ADMIN</h4>
+
+                      {% elif user.IsAdmin%}
+                      <hr>
                       <h4 style='color:red;'>ADMIN</h4>
                       {% endif %}
-                      
                       
                     </div>
                         
@@ -48,6 +48,10 @@
               <div class="card mt-3">
                 <h4 class="list-group-item d-flex justify-content-between align-items-center">Recents</h4>
                 <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                    <h6 class="mb-0">Website</h6>
+                    <span class="text-secondary">https://bootdey.com</span>
+                  </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                     <h6 class="mb-0">Website</h6>
                     <span class="text-secondary">https://bootdey.com</span>
@@ -104,35 +108,29 @@
                   
                 </div>
               </div>
-
-                <div class="col-sm-6 mb-3">
-                  <div class="card h-100">
-                    <div class="card-body">
-                      <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
-                      <small>Web Design</small>
-                      <div class="progress mb-3" style="height: 5px">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                      </div>
-                      <small>Website Markup</small>
-                      <div class="progress mb-3" style="height: 5px">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
-                      </div>
-                      
-                    </div>
-                  </div>
-                </div>
+          <div class="row gutters-sm" id="Content-Div">
+            {% if  user.IsSuperAdmin %}
+            <h4 style='color:green;'>ADMIN SECTION</h4>
+              <script>
+                  show_super_admin_content();
+              </script>
+            {% elif user.IsAdmin %}
+            <h4 style='color:green;'>ADMIN SECTION</h4>
+              <script>
+                  show_admin_content();
+              </script>
+            {% else %}
+            <h4 style='color:green;'>USER SECTION</h4>
+              <script>
+                  show_user_content();
+              </script>
+            {% endif %}
               </div>
-
-
-
             </div>
           </div>
 
         </div>
     </div>
-
-
-</div>
 
 {% endblock content %}
 
@@ -172,7 +170,6 @@
             }
             
             
-            
             // Set the user's profile image URL
             document.getElementById("profileImage").src = imageURL;
         }
@@ -186,6 +183,7 @@
 
 
 document.addEventListener('DOMContentLoaded',load_profile());
+
 function editProfile() {
     // Get the reference to the card body element
     var cardBody = document.getElementById("profileCardBody");
@@ -426,7 +424,6 @@ function Remove_Dp(){
     });
 
 }
-
 
 </script>
 

@@ -51,6 +51,10 @@ def get_image(image_id):
         return jsonify({"success": False, "message": str(e)})
 
 
+@app.route('/pay')
+def pay():
+    return render_template('Payment.html')
+
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
@@ -171,7 +175,7 @@ def Register_user():
                     'Profile_Url': '650ed668b0d448411c3e2e50'})
   
   Recieved.update(
-      {'IsAdmin':False,'RegistrationDate': datetime.now(), 'Address': ' '})
+      {'IsAdmin': False, "IsSuperAdmin":False,'RegistrationDate': datetime.now(), 'Address': ' '})
   db.UserData.insert_one(Recieved)
   return jsonify("Sucesss")
   
@@ -241,7 +245,7 @@ def login():
         # Redirect to the profile page upon successful login
         return 'ok',200
     else:
-        return redirect(url_for('Log_in')) # Return an appropriate response for failed login
+        return redirect(url_for('index')) # Return an appropriate response for failed login
 
 
 
@@ -264,7 +268,7 @@ def profile():
             return jsonify("User not found")
     else:
         print("session empty")
-        return redirect(url_for('Log_in'))
+        return redirect(url_for('index'))
 
 
 @app.route('/Check_login', methods=['GET'])
