@@ -108,9 +108,9 @@
                   
                 </div>
               </div>
-          <div class="row gutters-sm" id="Content-Div">
+          <div class="row gutters-sm" id="Content-Div" style="font-family:helvetica;">
             {% if  user.IsSuperAdmin %}
-            <h4 style='color:green;'>ADMIN SECTION</h4>
+            <h4 style='color:green;' >ADMIN SECTION</h4>
               <script>
                   show_super_admin_content();
               </script>
@@ -132,6 +132,34 @@
         </div>
     </div>
 
+
+     <!-- Wallet Modal -->
+    <div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="walletModalLabel">User Wallet Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>User Name:</strong> John Doe</p>
+                    <p><strong>Total Balance:</strong> $500.00</p>
+                    <p><strong>Maximum Balance Cap:</strong> $1000.00</p>
+                    <p><strong>Total Spent:</strong> $200.00</p>
+                    <h6>Recent Transactions:</h6>
+                    <ul>
+                        <li>Transaction 1: -$50.00</li>
+                        <li>Transaction 2: -$30.00</li>
+                        <li>Transaction 3: -$20.00</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Add Money</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block scripts %}

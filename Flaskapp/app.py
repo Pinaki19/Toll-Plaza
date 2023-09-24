@@ -53,7 +53,7 @@ def get_image(image_id):
 
 @app.route('/pay')
 def pay():
-    return render_template('Payment.html')
+    return render_template('Payment.html',PaymentInfo={'Type':'Add Money','Amount':100.00,"Gst":30.00,"Cupon":2.50})
 
 
 @app.route('/upload_image', methods=['POST'])

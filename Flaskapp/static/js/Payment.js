@@ -1,15 +1,34 @@
 
-function make_card(Name,Number,Exp,no,url){
+function make_card(Name,Number,Exp,no){
     var c1=document.createElement('div');
+    c1.className = `text-white card card${no} rounded-5 border p-3 mx-auto mb-3`;
     var cardtype = detectCardType(parseInt(Number));
     var type=cardtype.type;
-    c1.setAttribute('class', "card-scroll d-grid overflow-x-auto");
+    var removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'btn btn-danger d-flex flex-column';
+    removeButton.textContent = 'Remove';
+    var proceBtn=document.createElement('button');
+    proceBtn.className = "btn btn-primary";
+    proceBtn.textContent="Proceed";
+    proceBtn.addEventListener('click',function(){
+        var cardToProcess = this.parentElement.parentElement;
+        if(cardToProcess){
+            Process_Payment(cardToProcess);
+        }
+    });
+    removeButton.addEventListener('click', function () {
+        var cardToRemove = this.parentElement.parentElement; // Get the parent of the parent
+        if (cardToRemove) {
+            removeCard(cardToRemove); // Call the removeCard function with the card element
+        }
+    });
+
     c1.innerHTML =`
-    <div class=" text-white card card${no} rounded-5 border p-3 mx-auto mb-3">
         <div class="d-flex justify-content-between ">
             <div>
                 <p class="m-0 fw-light">Card Holder</p>
-                <p class="m-0 fw-light">${Name}</p>
+                <p class="m-0" style="font-weight:bold; font-family:open-sans;color:black;">${Name}</p>
             </div>
             <div>
                 <img src="${get_card_url(type)}" style="width:45px;height:35px;" alt="card-logo">
@@ -18,21 +37,19 @@ function make_card(Name,Number,Exp,no,url){
         <div class="d-flex justify-content-between pt-1">
             <p class="m-0">${Number}</p>
             <p class="m-0">${Exp}</p>
-        </div>
-        <div class="row card-buttons d-flex flex-col-auto">
-            <!-- Remove Card button -->
-            <button type="button" class="btn btn-danger d-flex flex-column">Remove</button>
-            <!-- Proceed button -->
-            <button type="button" class="btn btn-primary">Proceed</button>
-        </div>
-    </div>`;
+        </div>`;
+    var c2=document.createElement('div');
+    c2.className ="row card-buttons d-flex flex-col-auto"
+    c2.appendChild(proceBtn);
+    c2.appendChild(removeButton);
+    c1.appendChild(c2);
     return c1;
 }
 
 function load_cards() {
     var target=document.getElementById("Cards");
-    target.appendChild(make_card('Pinaki Banerjee',"6759649826438453",'09/25',1));
-    
+    target.append(make_card('Pinaki Banerjee',"6759649826438453",'09/25',1));
+    //target.append(make_card('Pinaki Banerjee', "6759649826438453", '09/25', 1));
 }
 
 
@@ -89,3 +106,23 @@ function isLuhnValid(number) {
 
     return sum % 10 === 0;
 }
+
+function add_card(){
+    var target = document.getElementById("Cards");
+    const Name=document.getElementById("Username").value;
+    const Number = document.getElementById("cardNumber").value.replace(/\s/g, '');
+    const ExpM = document.getElementById("expirationMonth").value;
+    const ExpY = document.getElementById("expirationYear").value;
+    if(!target||!Name||!Number||!ExpM||!ExpY)
+        return;
+    if(!isLuhnValid(Number)){
+        alert("Card invalid!");
+        return;
+    }
+    target.appendChild(make_card(Name, Number, String(ExpM)+'/'+String(ExpY), Math.floor(Math.random()*15)+1));;
+}
+
+function removeCard(cardElement) {
+    cardElement.remove();
+}
+
