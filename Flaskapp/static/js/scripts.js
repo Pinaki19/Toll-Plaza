@@ -34,7 +34,7 @@ var dict = {
   login:Go_Login,
   help: expandMessagesDropdown,
   logout:Logout,
-  signup:Go_SignUp,
+  
 };
 
 function search(){
@@ -316,19 +316,7 @@ function validateMobile() {
 }
 
 
-function show_super_admin_content(){
-
-
-  show_admin_content();
-}
-
-function show_admin_content(){
-
-
-  show_user_content();
-}
-
-function create_template(Name,Desc,modal="none"){
+function Add_template(Name, Desc, modal = "none") {
   var elem = document.createElement('div');
   elem.setAttribute('class', "col-sm-6 mb-3");
   var ch1 = document.createElement('div');
@@ -340,17 +328,55 @@ function create_template(Name,Desc,modal="none"){
   <a class="btn btn-info btn-md" style=" background-color:lightgreen;"${modal}>Go</a></div>`;
   ch1.appendChild(ch2);
   elem.appendChild(ch1);
-  return elem;
+  document.getElementById('Content-Div').appendChild(elem);
+}
+
+
+function show_super_admin_content(){
+  Add_template('Create Admin', 'Add a new Admin for this system');
+  Add_template('Delete Admin', 'Remove Admin account');
+  show_admin_content();
+}
+
+function show_admin_content(){
+  
+  var elem2 = document.createElement('h4');
+  elem2.textContent="ADMIN SECTION";
+  elem2.style.color='blue';
+  document.getElementById("Content-Div").appendChild(elem2);
+  Add_template('Change Toll Rate','Modify the current Toll Rates');
+  Add_template('Modify Discounts', 'Issue new or modify existing Discount offes.');
+  show_user_content();
 }
 
 function show_user_content(){
-  var elem = create_template('Wallet', 'Check your Wallet In detail','data-bs-toggle="modal" data-bs-target="#walletModal"');
-    document.getElementById('Content-Div').appendChild(elem);
-  var elem2 = create_template('All Transactions', 'Check your lifetime transactions');
-    document.getElementById('Content-Div').appendChild(elem2);
-  var elem3 = create_template('Add New Vehicle','Keep all your vehicles saved for faster payments');
-    document.getElementById('Content-Div').appendChild(elem3);
-  document.getElementById('Content-Div').appendChild(create_template('All Vehicles','Edit vehicle information'));
+
+  var elem2 = document.createElement('h4');
+  elem2.textContent = "USER SECTION";
+  elem2.style.color = '#28dded';
+  document.getElementById("Content-Div").appendChild(elem2);
+  Add_template('Wallet', 'Check your Wallet In detail','data-bs-toggle="modal" data-bs-target="#walletModal"');
+  Add_template('All Transactions', 'Check your lifetime transactions');
+  
   
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+  fetch('/get_cupons')
+    .then(response => response.json())
+    .then(data => {
+      if (data.data && data.data.length > 0) {
+        const cuponNames = data.data.map(cuponName => cuponName.charAt(0).toUpperCase() + cuponName.slice(1));
+        const showCuponsDiv = document.getElementById('ShowCupons');
+
+        // Join the capitalized cupon names with commas and set as text content
+        showCuponsDiv.textContent = 'Cupons available : ' + cuponNames.join(' | ');
+      } else {
+        // Handle the case where there are no cupon names
+        console.log('No cupon names available');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+});

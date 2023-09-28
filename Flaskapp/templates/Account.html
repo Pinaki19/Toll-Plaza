@@ -110,17 +110,17 @@
               </div>
           <div class="row gutters-sm" id="Content-Div" style="font-family:helvetica;">
             {% if  user.IsSuperAdmin %}
-            <h4 style='color:green;' >ADMIN SECTION</h4>
+            <h4 style='color:red;' >SUPER ADMIN SECTION</h4>
               <script>
                   show_super_admin_content();
               </script>
             {% elif user.IsAdmin %}
-            <h4 style='color:green;'>ADMIN SECTION</h4>
+            
               <script>
                   show_admin_content();
               </script>
             {% else %}
-            <h4 style='color:green;'>USER SECTION</h4>
+            
               <script>
                   show_user_content();
               </script>
@@ -142,8 +142,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p><strong>User Name:</strong> John Doe</p>
-                    <p><strong>Total Balance:</strong> $500.00</p>
+                    <p><strong>Current Balance:</strong> $500.00</p>
                     <p><strong>Maximum Balance Cap:</strong> $1000.00</p>
                     <p><strong>Total Spent:</strong> $200.00</p>
                     <h6>Recent Transactions:</h6>

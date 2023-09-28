@@ -1,22 +1,17 @@
 
 function make_card(Name,Number,Exp,no){
+    var cardtype = detectCardType(parseInt(Number));
+    var type = cardtype.type;
+    if (type === "unkonown") {
+        alert("Card not supported!");
+        return;
+    }
     var c1=document.createElement('div');
     c1.className = `text-white card card${no} rounded-5 border p-3 mx-auto mb-3`;
-    var cardtype = detectCardType(parseInt(Number));
-    var type=cardtype.type;
     var removeButton = document.createElement('button');
     removeButton.type = 'button';
-    removeButton.className = 'btn btn-danger d-flex flex-column';
-    removeButton.textContent = 'Remove';
-    var proceBtn=document.createElement('button');
-    proceBtn.className = "btn btn-primary";
-    proceBtn.textContent="Proceed";
-    proceBtn.addEventListener('click',function(){
-        var cardToProcess = this.parentElement.parentElement;
-        if(cardToProcess){
-            Process_Payment(cardToProcess);
-        }
-    });
+    removeButton.className = 'btn btn-danger';
+    removeButton.innerHTML = '<i class="fas fa-trash" style="color:black; font-size:14px;"></i>';
     removeButton.addEventListener('click', function () {
         var cardToRemove = this.parentElement.parentElement; // Get the parent of the parent
         if (cardToRemove) {
@@ -26,21 +21,22 @@ function make_card(Name,Number,Exp,no){
 
     c1.innerHTML =`
         <div class="d-flex justify-content-between ">
-            <div>
-                <p class="m-0 fw-light">Card Holder</p>
-                <p class="m-0" style="font-weight:bold; font-family:open-sans;color:black;">${Name}</p>
+            <div clss='d-flex flex-column flex-wrap'>
+                <p class="m-0 fw-light" style="font-size:14px;" >Card Holder</p>
+                <p class="m-0" style="font-weight:bold; font-size:16px; font-family:open-sans;color:black;">${Name}</p>
             </div>
             <div>
-                <img src="${get_card_url(type)}" style="width:45px;height:35px;" alt="card-logo">
+                <img src="${get_card_url(type)}" style="width:35px;height:28px;" alt="card-logo">
+                <p class="m-0" style="font-size:13px;">${Exp}</p>
             </div>
         </div>
         <div class="d-flex justify-content-between pt-1">
-            <p class="m-0">${Number}</p>
-            <p class="m-0">${Exp}</p>
+            <p class="m-0" style="font-size:13px;">${Number}</p>
+            
         </div>`;
     var c2=document.createElement('div');
     c2.className ="row card-buttons d-flex flex-col-auto"
-    c2.appendChild(proceBtn);
+    //c2.appendChild(proceBtn);
     c2.appendChild(removeButton);
     c1.appendChild(c2);
     return c1;
@@ -78,7 +74,6 @@ function detectCardType(number) {
         if (cardType.pattern.test(number)) {
             // Check if the card number's length matches the expected length
             var isValidLength = cardType.length.includes(number.length);
-
             return { type: key, usesLuhn: cardType.luhn,len:cardType.length, isValidLength: isValidLength };
         }
     }
@@ -107,14 +102,10 @@ function isLuhnValid(number) {
     return sum % 10 === 0;
 }
 
-function add_card(){
+
+
+function add_card(Name, Number, ExpM, ExpY){
     var target = document.getElementById("Cards");
-    const Name=document.getElementById("Username").value;
-    const Number = document.getElementById("cardNumber").value.replace(/\s/g, '');
-    const ExpM = document.getElementById("expirationMonth").value;
-    const ExpY = document.getElementById("expirationYear").value;
-    if(!target||!Name||!Number||!ExpM||!ExpY)
-        return;
     if(!isLuhnValid(Number)){
         alert("Card invalid!");
         return;
@@ -125,4 +116,25 @@ function add_card(){
 function removeCard(cardElement) {
     cardElement.remove();
 }
+
+
+async function check_add(){
+    event.preventDefault()
+
+    var target = document.getElementById("Cards");
+    const Name = document.getElementById("Username").value;
+    const Number = document.getElementById("cardNumber").value.replace(/\s/g, '');
+    const ExpM = document.getElementById("expirationMonth").value;
+    const ExpY = document.getElementById("expirationYear").value;
+    const cvv = document.getElementById("cvvInput").value;
+    if (!target || !Name || !Number || !ExpM || !ExpY||!cvv||ExpM.length!=2||ExpY.length!=2||cvv.length!=3)
+        return;
+    if(document.getElementById("Save_card").checked){
+        add_card(Name,Number,ExpM,ExpY);
+    }
+   
+    showPaymentCompleteModal();
+    
+}
+
 

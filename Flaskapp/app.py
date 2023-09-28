@@ -8,11 +8,20 @@ import gridfs
 from bson import ObjectId
 import io
 import pymongo
+from datetime import timedelta
+
 
 IST = timezone('Asia/Kolkata')
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/Users"
+app.config["MONGO_URI"] = "mongodb://localhost:27017"
+
+# Set your desired database name (e.g., "Users")
+database_name = "Users"
+
+# Initialize the PyMongo extension with your Flask app
+mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/{database_name}")
+db = mongo.db
 app.config['SECRET_KEY'] = 'ea5691dc5cddf9f9c4cc457e135e8b44066641c940cc5b6278e20afb2b1b'
 
 # Use MongoDB for session storage
@@ -26,14 +35,13 @@ app.config["SESSION_MONGODB_COLLECT"] = "sessions"
 
 Session(app)
 
-mongo = PyMongo(app)
-db = mongo.db
 CORS(app)
 
 
 # Replace 'your_db_name' with your actual database name
-
-fs = gridfs.GridFS(db)
+mongo_for_gridfs = PyMongo(
+    app, uri=f"{app.config['MONGO_URI']}/{database_name}")
+fs = gridfs.GridFS(mongo_for_gridfs.db)
 
 
 @app.route('/get_image/<image_id>', methods=['GET'])
@@ -51,9 +59,6 @@ def get_image(image_id):
         return jsonify({"success": False, "message": str(e)})
 
 
-@app.route('/pay')
-def pay():
-    return render_template('Payment.html',PaymentInfo={'Type':'Add Money','Amount':100.00,"Gst":30.00,"Cupon":2.50})
 
 
 @app.route('/upload_image', methods=['POST'])
@@ -219,7 +224,6 @@ def Edit_account():
   
   
   
-  
 @app.route('/Find_user',methods=['POST'])
 def find_user():
   Recieved = request.get_json()
@@ -271,12 +275,278 @@ def profile():
         return redirect(url_for('index'))
 
 
+def insert_payment_id(email, id):
+    # Find the user by email
+    user = db.UserData.find_one({'Email': email})
+    if user:
+        # Check if the 'transactions' field exists
+        if 'transactions' not in user:
+            # Create 'transactions' field as a list with the first ID
+            user['transactions'] = [id]
+        else:
+            # Append the ID to the existing list
+            user['transactions'].append(id)
+        # Update the user document in the database
+        db.UserData.update_one({'Email': email}, {
+                            '$set': {'transactions': user['transactions']}})
+    else:
+        return
+
 @app.route('/Check_login', methods=['GET'])
 def check_login():
     if 'email' in session:
         return "ok",200
     else:
         abort(404)
+
+@app.route('/get_toll_rate')
+def get_rate():
+    mongo2= PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+    db=mongo2.db
+    object_id = ObjectId("6510916ca24f1f9870537d5f")
+    return jsonify(db.Rate.find_one({"_id": object_id},{"_id":False}))
+
+def get_toll_amount(vehicle,journey):
+    mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+    db = mongo2.db
+    object_id = ObjectId("6510916ca24f1f9870537d5f")
+    Rate_chart = db.Rate.find_one({"_id": object_id}, {"_id": False})
+    if vehicle in Rate_chart:
+        if journey in Rate_chart[vehicle]:
+            return Rate_chart[vehicle][journey]
+    return 0
+
+def find_global_discount_rate():
+    mongo3 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
+    db = mongo3.db
+    object_Id = ObjectId("6510a31f5c761cfa640a15f0")
+    obj = db.Discount.find_one({"_id": object_Id}, {"_id": False})
+    return obj['discountRate']
+    
+
+@app.route('/discounts')
+def get_discounts():
+    rate = find_global_discount_rate()
+    if(rate>0):
+        return jsonify({'rate':rate})
+    else:
+        abort(404)
+      
+
+def get_cupon_discount_rate(val):
+    mongo3 = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
+    db = mongo3.db
+    obj = db.Cupons.find()
+    for item in obj:
+        if val in item:
+            return item[val]
+    return 0
+
+
+def get_gst_rate():
+    mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+    db = mongo2.db
+    object_id = ObjectId("6511be0f6cae5e50b4f30e34")
+    return db.GST.find_one({"_id": object_id}, {"_id": False})['rate']
+      
+      
+      
+def calculate_gst(Amount):
+    rate=get_gst_rate()
+    return (Amount/100)*rate
+      
+def calculate_cupon(Amount,val):
+    rate=get_cupon_discount_rate(val)
+    return (Amount/100)*rate
+      
+
+def find_Global_discount_amount(Amount):
+    rate = find_global_discount_rate()
+    if(rate<=0):
+        return 0
+    return (Amount/100)*rate
+      
+      
+@app.post('/Apply_coupon')
+def apply_cupon():
+    data=request.get_json()
+    print(data)
+    cupon=data['cupon'].strip().lower()
+    if(len(cupon)>=10 or cupon==''):
+        abort(404)
+    else:
+        # Check if payment is requested
+        payment_requested = session.get('PaymentRequested')
+        if not payment_requested:
+            # Handle the case where payment is not requested (e.g., redirect to a different page)
+            session.pop('PaymentID', '')
+            return abort(404)
+
+        # Retrieve the payment ID from the session
+        payment_id = session.get('PaymentID')
+        if not payment_id:
+            # Handle the case where payment ID is not found (e.g., redirect to a different page)
+            return abort(404)
+
+        # Retrieve payment data from MongoDB using the payment ID
+        mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+        db = mongo.db
+        collection = db.PaymentReferences
+        payment_doc = collection.find_one({'_id': ObjectId(payment_id)})
+        if not payment_doc:
+            session.pop('PaymentRequested', '')
+            session.pop('PaymentID', '')
+            # Handle the case where payment data is not found (e.g., redirect to a different page)
+            return abort(404)
+
+        # Extract payment data from the document
+        payment_data = payment_doc['data']
+        gross_amount = payment_data['Amount']-payment_data['GlobalDiscount']
+        discount = round(calculate_cupon(gross_amount, cupon), 2)
+        if(discount>0):
+            payment_data['Cupon'] = discount
+            collection.update_one(
+                {'_id': ObjectId(payment_id)},
+                {"$set": {"data.Cupon": discount}}
+            )
+        return jsonify({'success': True, 'Data':payment_data})
+    
+            
+@app.route('/pay', methods=['POST'])
+def pay():
+    PaymentInfo = request.get_json()
+    Vehicle = PaymentInfo['Vehicle_Type'].strip().lower()
+    Journey = PaymentInfo['Journey'].strip().lower()
+    Number = PaymentInfo['Vehicle_Number'].strip()
+    Amount = get_toll_amount(Vehicle, Journey)
+    if Amount == 0:
+        abort(404)
+    Type = PaymentInfo['Type']
+    Gst = round(calculate_gst(Amount), 2)
+    if 'Cupon' in PaymentInfo:
+        cupon_applied = PaymentInfo['Cupon'].strip()
+    else:
+        cupon_applied = 'None'
+    Global_disc = round(find_Global_discount_amount(Amount), 2)
+    cupon_discount = round(calculate_cupon(Amount, cupon_applied), 2)
+    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+    db = mongo.db
+    Data = {
+        'Type': Type,
+        'Amount': round(float(Amount), 2),
+        "Gst": Gst,
+        "Cupon": cupon_discount,
+        'GlobalDiscount': Global_disc,
+        'Number': Number
+    }
+    # Store the payment data in MongoDB
+    expiration_time = datetime.now() + timedelta(minutes=20)
+    payment_doc = {
+        'data': Data,
+        'expiration_time': expiration_time
+    }
+    result = db.PaymentReferences.insert_one(payment_doc)
+
+    # Set session variables
+    session['PaymentRequested'] = True
+    # Convert ObjectId to str for storage
+    session['PaymentID'] = str(result.inserted_id)
+
+    return redirect(url_for('complete_payment'))
+
+
+
+@app.route('/complete_payment', methods=['GET'])
+def complete_payment():
+    # Check if payment is requested
+    payment_requested = session.get('PaymentRequested')
+    if not payment_requested:
+        # Handle the case where payment is not requested (e.g., redirect to a different page)
+        session.pop('PaymentID', '')
+        return abort(404)
+
+    # Retrieve the payment ID from the session
+    payment_id = session.get('PaymentID')
+    if not payment_id:
+        session.pop('PaymentRequested', '')
+        # Handle the case where payment ID is not found (e.g., redirect to a different page)
+        return abort(404)
+
+    # Retrieve payment data from MongoDB using the payment ID
+    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+    db = mongo.db
+    collection=db.PaymentReferences
+    payment_doc = collection.find_one({'_id': ObjectId(payment_id)})
+    if not payment_doc:
+        session.pop('PaymentRequested', '')
+        session.pop('PaymentID', '')
+        # Handle the case where payment data is not found (e.g., redirect to a different page)
+        return abort(404)
+
+    # Extract payment data from the document
+    payment_data = payment_doc['data']
+
+    # Check if the payment data has expired
+    expiration_time = payment_doc['expiration_time']
+    current_time = datetime.now()
+    if current_time > expiration_time:
+        session.pop('PaymentRequested', '')
+        session.pop('PaymentID', '')
+        # Payment data has expired, delete the document and abort 404
+        collection.delete_one({'_id': ObjectId(payment_id)})
+        return abort(404)
+
+    return render_template('Payment.html', PaymentInfo=payment_data)
+
+
+
+@app.get('/get_payment_id')
+def get_payment_id():
+    if 'PaymentID' in session and 'PaymentRequested' in session:
+        session.pop('PaymentRequested', '')
+        payment_id = session.pop('PaymentID', '')
+        # Create a MongoDB connection
+        mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+        db = mongo.db
+        # Get the payment data from PaymentReferences
+        payment_doc = db.PaymentReferences.find_one(
+            {'_id': ObjectId(payment_id)})
+
+        if payment_doc:
+            # Add the payment data to CompletedPayments with a reference number field set to the ID
+            payment_doc['ReferenceNumber'] = str(payment_id)
+            if 'email' in session:
+                email = session.get('email')
+                payment_doc['email']=email
+                payment_doc['DateTime'] = datetime.now()
+                insert_payment_id(email, str(payment_id))
+            db.CompletedPayments.insert_one(payment_doc)
+
+            # Delete the payment data from PaymentReferences
+            db.PaymentReferences.delete_one({'_id': ObjectId(payment_id)})
+
+            return jsonify({"success": True, "message": str(payment_id)})
+        else:
+            return jsonify({"success": False, "message": "Payment data not found"})
+
+    return jsonify({"success": False, "message": "No PaymentID in session"})
+
+@app.get('/get_cupons')
+def get_cupon_names():
+    #abort(404)
+    mongo3 = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
+    db = mongo3.db
+    obj = db.Cupons.find()
+    for item in obj:
+        data=list(item.keys())
+        break
+    data.remove("_id")
+    return jsonify({'success':True,'data':data})
+    
+        
+    
 
 if __name__ == "__main__":
     app.run(port=8080,debug=True)
