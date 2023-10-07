@@ -45,6 +45,7 @@ async function Process_Toll_pay() {
 }
 
 
+
 function formatToTwoDecimalPlaces(number) {
     return parseFloat(number).toFixed(2);
 }
@@ -88,8 +89,14 @@ async function Check_and_apply() {
 }
 
 window.addEventListener('load',function(){
-  
-    var val=PaymentInfo.Amount + PaymentInfo.Gst - PaymentInfo.Cupon - PaymentInfo.GlobalDiscount;
-    const formattedTotal=formatToTwoDecimalPlaces(val);
-    document.getElementById("paymentInfoTotal").innerHTML=`&#8377;${formattedTotal}`;
+  try{
+      var val = PaymentInfo.Amount + PaymentInfo.Gst - PaymentInfo.Cupon - PaymentInfo.GlobalDiscount;
+      const formattedTotal = formatToTwoDecimalPlaces(val);
+      document.getElementById("paymentInfoTotal").innerHTML = `&#8377;${formattedTotal}`;
+      
+  }catch(error){
+    null;
+  }
+    
 })
+

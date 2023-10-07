@@ -9,6 +9,7 @@
     
         .form-control,
         .btn {
+           
             border-radius: 8px;
         }
     
@@ -22,8 +23,8 @@
         #form #eye1,
         #Right_wrong {
             position: absolute;
-            top: -2px;
-            font-size: 18px;
+            top: -4px;
+            font-size: 16px;
             bottom: 25px;
             right: 24px;
             height: 4px !important;
@@ -49,11 +50,11 @@
             background: #1a1717e2;
             background-blend-mode: hue;
             box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
-            padding: 30px;
+            padding: 20px;
     
         }
     
-        .modal-body h2 {
+        .modal-body h3 {
             color: #eb8211;
             font-weight: bold;
             margin-top: 0;
@@ -64,7 +65,11 @@
         }
     
         .modal-body .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 14px;
+        }
+        .modal-body .form-group .input-group {
+            height:98%;
+            min-height: 30px;
         }
     
         .modal-body label {
@@ -73,23 +78,26 @@
         }
     
         .modal-body .form-control {
-            min-height: 38px;
+            min-height: 30px;
+            height:98%;
             box-shadow: none !important;
-            border-radius: 5px;
+            border-radius:0px 5px 5px 0px;
         }
     
         .modal-body .input-group-addon {
             max-width: 42px;
+            height:auto;
+            min-height: 30px;
             width: 25px;
-            ;
+            height: 98%;
+            position: relative;
+            top:1px;
             text-align: center;
             background-color: #64b4e9;
+            border-radius: 5px 0px 0px 5px;
         }
     
-        .modal-body input[type="checkbox"] {
-            margin-top: 2px;
-        }
-    
+        
         .modal-body .btn {
             font-size: 16px;
             font-weight: bold;
@@ -124,9 +132,9 @@
         }
     
         .modal-body form a {
-            color: #33f929fc;
+            color: #f97c29fc;
             text-decoration: none;
-            font-weight: bolder;
+           
     
         }
     
@@ -136,16 +144,23 @@
     
         .modal-body .fa,
         .bi {
-            font-size: 21px;
+            font-size: 16px;
+        }
+        .modal-body .bi {
+           position: relative;
+           top:3px;
         }
     
-        .modal-body .fa-paper-plane {
-            font-size: 18px;
-    
-        }
+        
     
         .modal-body .bi-gender-ambiguous {
             padding-right: 5px;
+            font-size: 18px;
+        }
+        .modal-body select{
+            font-size: 14px;
+            font-weight: 400;
+
         }
     
     
@@ -158,13 +173,13 @@
         .modal-body .fa-check {
             color: #535351;
             left: 9px;
-            top: 9px;
+            top: 7px;
             font-size: 11px;
             position: absolute;
         }
     
         .modal-body #form #Login {
-            background-color: #519cf1;
+           
             margin-left: 8px;
         }
     

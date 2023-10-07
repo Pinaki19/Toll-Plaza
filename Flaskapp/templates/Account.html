@@ -1,10 +1,11 @@
 {% extends "Base.html" %}
-
+{% block title %}<title>Profile Page</title>{% endblock title %}
 {% block Style_local %}
 <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/Accounts.css') }}">
+<script src="{{ url_for('static',filename='js/Profile.js') }}"></script>
 {% endblock Style_local %}
 
-{% block title %}Profile Page{% endblock title %}
+
 
 {% block navContent %}
 <a href="#" id='Logout' onclick="confirm_logout()" class="nav-item nav-link" style="margin-right:20px;">Log Out</a>
@@ -35,7 +36,7 @@
 
                       {% elif user.IsAdmin%}
                       <hr>
-                      <h4 style='color:red;'>ADMIN</h4>
+                      <h4 style='color:#f56c27;'>ADMIN</h4>
                       {% endif %}
                       
                     </div>
@@ -46,16 +47,8 @@
                 
               </div>
               <div class="card mt-3">
-                <h4 class="list-group-item d-flex justify-content-between align-items-center">Recents</h4>
+                <h4 class="list-group-item d-flex justify-content-between align-items-center" style="background:#f7e9c1;">Recents</h4>
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                    <h6 class="mb-0">Website</h6>
-                    <span class="text-secondary">https://bootdey.com</span>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                    <h6 class="mb-0">Website</h6>
-                    <span class="text-secondary">https://bootdey.com</span>
-                  </li>
                   
                 </ul>
               </div>
@@ -109,18 +102,103 @@
                 </div>
               </div>
           <div class="row gutters-sm" id="Content-Div" style="font-family:helvetica;">
+              
             {% if  user.IsSuperAdmin %}
-            <h4 style='color:red;' >SUPER ADMIN SECTION</h4>
+                <h4 style='color:red;'>SUPER ADMIN SECTION</h4>
+                    <script>
+                        show_super_admin_content();
+                        show_admin_content();
+                    </script>
+                    <h4 style="color:#28dded">USER SECTION </h4>
+                    <div class="col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="d-flex align-items-center mb-3" style="font-size:20px;">Your Wallet</h6>
+                                <p style="padding-bottom:4px;margin-bottom:0;">Check Wallet transactions, Add Money, Reset PIN.</p>
+                                {% if wallet.Default %}
+                                <p id="Default_pin" style="padding:0;margin:0;color:red;padding-bottom:5px;">Default wallet PIN is 1234. Please change it.</p>
+                                {% else %}
+                                <p id="Default_pin" ></p>
+                                {% endif %}
+                                <!-- Input fields for new PIN and confirmation -->
+                                <div id="ResetPinFields" style="display: none;padding:5px;">
+                                  <input type="number" placeholder="Enter new PIN (4 digits)" id="NewPinInput" style="margin-right: 5px;" required maxlength="4">
+                                  <input type="number" placeholder="Confirm new PIN" id="ConfirmPinInput" style="margin-right: 5px;" required maxlength="4">
+
+                              </div>
+                                <hr style="padding:0px;margin:0px;">
+                                <p id="WalletBalance" style="padding:0;margin:0;position:absolute;top:11%;right:10%;color:blue">Balance: {{wallet.Balance}}</p>
+                                <div style="margin-top:5px;padding:0px;text-align:right;">
+                                    <a class="btn btn-primary btn-md" id="ResetPinButton" onclick="Reset()">Reset PIN</a>
+                                    <a class="btn btn-primary btn-md" id="confirmButton" style="display:none;" >confirm</a>
+                                    <a class="btn btn-secondary btn-md" id="cancelButton" style="display:none;" >cancel</a>
+                                    <a class="btn btn-info btn-md" id="Gobutton" style="background-color:lightgreen;" data-bs-toggle="modal" data-bs-target="#walletModal">Go</a>
+                                </div>
+                            </div>
+                        </div>
+                </div>
               <script>
-                  show_super_admin_content();
+                show_user_content();
               </script>
             {% elif user.IsAdmin %}
-            
               <script>
                   show_admin_content();
               </script>
+              <h4 style="color:#28dded">USER SECTION </h4>
+               <div class="col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="d-flex align-items-center mb-3" style="font-size:20px;">Your Wallet</h6>
+                                <p style="padding-bottom:4px;margin-bottom:0;">Check Wallet transactions, Add Money, Reset PIN.</p>
+                                {% if wallet.Default %}
+                                <p id="Default_pin" style="padding:0;margin:0;color:red;padding-bottom:5px;">Default wallet PIN is 1234. Please change it.</p>
+                                {% endif %}
+                                <!-- Input fields for new PIN and confirmation -->
+                                <div id="ResetPinFields" style="display: none;padding:5px;">
+                                  <input type="number" placeholder="Enter new PIN (4 digits)" id="NewPinInput" style="margin-right: 5px;" required maxlength="4">
+                                  <input type="number" placeholder="Confirm new PIN" id="ConfirmPinInput" style="margin-right: 5px;" required maxlength="4">
+
+                              </div>
+                                <hr style="padding:0px;margin:0px;">
+                                <p id="WalletBalance" style="padding:0;margin:0;position:absolute;top:11%;right:10%;color:blue">Balance: {{wallet.Balance}}</p>
+                                <div style="margin-top:5px;padding:0px;text-align:right;">
+                                    <a class="btn btn-primary btn-md" id="ResetPinButton" onclick="Reset()">Reset PIN</a>
+                                    <a class="btn btn-primary btn-md" id="confirmButton" style="display:none;" >confirm</a>
+                                    <a class="btn btn-secondary btn-md" id="cancelButton" style="display:none;" >cancel</a>
+                                    <a class="btn btn-info btn-md" id="Gobutton" style="background-color:lightgreen;" data-bs-toggle="modal" data-bs-target="#walletModal">Go</a>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            <script>show_user_content()</script>
+
             {% else %}
-            
+            <h4 style="color:#28dded">USER SECTION </h4>
+                <div class="col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="d-flex align-items-center mb-3" style="font-size:20px;">Your Wallet</h6>
+                                <p style="padding-bottom:4px;margin-bottom:0;">Check Wallet transactions, Add Money, Reset PIN.</p>
+                                {% if wallet.Default %}
+                                <p id="Default_pin" style="padding:0;margin:0;color:red;padding-bottom:5px;">Default wallet PIN is 1234. Please change it.</p>
+                                {% endif %}
+                                <!-- Input fields for new PIN and confirmation -->
+                                <div id="ResetPinFields" style="display: none;padding:5px;">
+                                  <input type="number" placeholder="Enter new PIN (4 digits)" id="NewPinInput" style="margin-right: 5px;" required maxlength="4">
+                                  <input type="number" placeholder="Confirm new PIN" id="ConfirmPinInput" style="margin-right: 5px;" required maxlength="4">
+
+                              </div>
+                                <hr style="padding:0px;margin:0px;">
+                                <p id="WalletBalance" style="padding:0;margin:0;position:absolute;top:11%;right:10%;color:blue">Balance: {{wallet.Balance}}</p>
+                                <div style="margin-top:5px;padding:0px;text-align:right;">
+                                    <a class="btn btn-primary btn-md" id="ResetPinButton" onclick="Reset()">Reset PIN</a>
+                                    <a class="btn btn-primary btn-md" id="confirmButton" style="display:none;" >confirm</a>
+                                    <a class="btn btn-secondary btn-md" id="cancelButton" style="display:none;" >cancel</a>
+                                    <a class="btn btn-info btn-md" id="Gobutton" style="background-color:lightgreen;" data-bs-toggle="modal" data-bs-target="#walletModal">Go</a>
+                                </div>
+                            </div>
+                        </div>
+                </div>
               <script>
                   show_user_content();
               </script>
@@ -133,28 +211,48 @@
     </div>
 
 
-     <!-- Wallet Modal -->
-    <div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="walletModalLabel">User Wallet Information</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+   <!-- Wallet Modal -->
+<div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:#f9fae8;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="walletModalLabel">User Wallet Information</h5>
+            </div>
+            <div class="modal-body" id="WalletBody" style="padding:25px;">
+                <p id="CurrentBalance"><strong >Current Balance:</strong> &#8377;{{wallet.Balance}} </p>
+                <p id="MaxBalance"><strong>Maximum Balance Cap: </strong>&#8377;50,000</p>
+                <p id="Added"><strong>Total Added:</strong> &#8377;{{wallet.Added}}</p>
+                <p id="Spent"> <strong>Total Spent:</strong> &#8377;{{wallet.Spent}}</p>
+                <h6>Recent Transactions:</h6>
+                {% include 'recent_transactions.html' %}
+                <div id="AddMoneySection" style="display: none;">
+                    <label for="amount">Enter Amount:</label>
+                    <input type="number" id="amount" name="amount" min="1" required placeholder="Max 5000">
                 </div>
-                <div class="modal-body">
-                    <p><strong>Current Balance:</strong> $500.00</p>
-                    <p><strong>Maximum Balance Cap:</strong> $1000.00</p>
-                    <p><strong>Total Spent:</strong> $200.00</p>
-                    <h6>Recent Transactions:</h6>
-                    <ul>
-                        <li>Transaction 1: -$50.00</li>
-                        <li>Transaction 2: -$30.00</li>
-                        <li>Transaction 3: -$20.00</li>
-                    </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="toggleAddMoneySection()">Add Money</button>
+                <button type="button" class="btn btn-primary" id="proceedButton" style="display: none;" onclick="processAddMoney()">Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="modal fade" id="RecentModal" tabindex="-1" aria-labelledby="RecentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background:#fafae8;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="RecentModalLabel">All Recent Transactions</h5>
+                   
+                </div>
+                <div class="modal-body" id="RecentModalbody" style="padding:25px;">
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Add Money</button>
+                   
                 </div>
             </div>
         </div>
@@ -348,13 +446,15 @@ function Save_data() {
     .then(response => response.json())
     .then(data => {
       // Handle the response from the server if needed
-      console.log(data);
+     
+      location.reload();
     })
     .catch(error => {
       // Handle any errors
       console.error(error);
+      location.reload();
     });
-    location.reload();
+    
 }
 
 // Get the elements
@@ -451,6 +551,20 @@ function Remove_Dp(){
     });
 
 }
+
+$('#walletModal').on('show.bs.modal', function (event) {
+    $.ajax({
+      url: '/get_recent_transactions',
+      method: 'GET',
+      success: function (data) {
+          $('#RecentTransactions').html(data);
+        },
+      error: function (error) {
+        console.error('Error fetching recent transactions:', error);
+      }
+    });
+});
+
 
 </script>
 

@@ -1,5 +1,6 @@
 async function check_login(){
   let response=await fetch('/Check_login');
+  get_cupons();
   if(!response.ok){
     document.getElementById('Sign_up').innerHTML="Sign Up";
     document.getElementById('Login').innerHTML = 'Login';
@@ -316,52 +317,8 @@ function validateMobile() {
 }
 
 
-function Add_template(Name, Desc, modal = "none") {
-  var elem = document.createElement('div');
-  elem.setAttribute('class', "col-sm-6 mb-3");
-  var ch1 = document.createElement('div');
-  ch1.setAttribute('class', "card h-100");
-  var ch2 = document.createElement('div');
-  ch2.setAttribute('class', "card-body");
-  ch2.innerHTML = `<h6 class="d-flex align-items-center mb-3" style="font-size:20px;">${Name}</h6>
-  <p>${Desc}</p><hr style="padding:0px;margin:0px;"><div style="margin-top:5px;padding:0px;text-align:right;">
-  <a class="btn btn-info btn-md" style=" background-color:lightgreen;"${modal}>Go</a></div>`;
-  ch1.appendChild(ch2);
-  elem.appendChild(ch1);
-  document.getElementById('Content-Div').appendChild(elem);
-}
 
-
-function show_super_admin_content(){
-  Add_template('Create Admin', 'Add a new Admin for this system');
-  Add_template('Delete Admin', 'Remove Admin account');
-  show_admin_content();
-}
-
-function show_admin_content(){
-  
-  var elem2 = document.createElement('h4');
-  elem2.textContent="ADMIN SECTION";
-  elem2.style.color='blue';
-  document.getElementById("Content-Div").appendChild(elem2);
-  Add_template('Change Toll Rate','Modify the current Toll Rates');
-  Add_template('Modify Discounts', 'Issue new or modify existing Discount offes.');
-  show_user_content();
-}
-
-function show_user_content(){
-
-  var elem2 = document.createElement('h4');
-  elem2.textContent = "USER SECTION";
-  elem2.style.color = '#28dded';
-  document.getElementById("Content-Div").appendChild(elem2);
-  Add_template('Wallet', 'Check your Wallet In detail','data-bs-toggle="modal" data-bs-target="#walletModal"');
-  Add_template('All Transactions', 'Check your lifetime transactions');
-  
-  
-}
-
-document.addEventListener('DOMContentLoaded', function () {
+function get_cupons() {
   fetch('/get_cupons')
     .then(response => response.json())
     .then(data => {
@@ -379,4 +336,4 @@ document.addEventListener('DOMContentLoaded', function () {
     .catch(error => {
       console.error('Error:', error);
     });
-});
+}

@@ -178,3 +178,38 @@ svg{
     padding: 0;
     margin-bottom: 5px;
 }
+
+/* Add failure content styles */
+#failureContent {
+    text-align: center;
+    display: none;
+}
+
+/* Styles for the failure cross (X) icon */
+#failureContent svg {
+    align-self: center;
+    margin-bottom: 20px;
+}
+
+/* Styles for the failure message */
+#failureContent h2 {
+    font-family: Helvetica;
+    font-size: 24px;
+    margin-top: 20px;
+    padding-top: 10px;
+    color: #FF0000;
+    opacity: 0;
+    animation: title .6s ease-in-out;
+    animation-fill-mode: forwards;
+    animation-delay: 1.8s;
+}
+
+#Reason p {
+    font-family: Helvetica;
+    font-size: 18px;
+    color: #522609;
+    opacity: 0;
+    animation: title .6s ease-in-out;
+    animation-fill-mode: forwards;
+    animation-delay: 1.8s;
+}
