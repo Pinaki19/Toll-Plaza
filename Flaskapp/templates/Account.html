@@ -127,7 +127,7 @@
 
                               </div>
                                 <hr style="padding:0px;margin:0px;">
-                                <p id="WalletBalance" style="padding:0;margin:0;position:absolute;top:11%;right:10%;color:blue">Balance: {{wallet.Balance}}</p>
+                                <p id="WalletBalance" style="padding:0;margin:0;position:absolute;top:18%;right:10%;color:#4a5cf7">Balance: <strong>{{wallet.Balance}}</p></strong>
                                 <div style="margin-top:5px;padding:0px;text-align:right;">
                                     <a class="btn btn-primary btn-md" id="ResetPinButton" onclick="Reset()">Reset PIN</a>
                                     <a class="btn btn-primary btn-md" id="confirmButton" style="display:none;" >confirm</a>
@@ -223,7 +223,8 @@
                 <p id="MaxBalance"><strong>Maximum Balance Cap: </strong>&#8377;50,000</p>
                 <p id="Added"><strong>Total Added:</strong> &#8377;{{wallet.Added}}</p>
                 <p id="Spent"> <strong>Total Spent:</strong> &#8377;{{wallet.Spent}}</p>
-                <h6>Recent Transactions:</h6>
+                
+                <h6 style="text-align:center;color:blue;">Recent Wallet Transactions</h6>
                 {% include 'recent_transactions.html' %}
                 <div id="AddMoneySection" style="display: none;">
                     <label for="amount">Enter Amount:</label>
@@ -257,6 +258,115 @@
             </div>
         </div>
     </div>
+
+
+<div class="modal fade" id="newAdminModal" tabindex="-1" aria-labelledby="newAdminModalLabel" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered custom-modal-dialog2">
+        <div class="modal-content" style="background:#f9fae8;">
+          <div class="modal-header">
+              <h5 class="modal-title" id="newAdminModalLabel">Modify Users</h5>
+          </div>
+          <div class="modal-body" id="newAdminBody" style="padding:25px;">
+              {% include 'Create_Admin.html' %}
+          </div>
+          <div id="warning"></div>
+          <div id="EnterPasscode" style="display: none;justify-self:center;text-align:center;padding-bottom:5px;margin:0;">
+                    <label for="Passcode">Enter Passcode:</label>
+                    <input type="number" id="passcode" name="passcode" min="1" required placeholder="4 digit passcode">
+          </div>
+          <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="reset_modal()">Close</button>
+                <button type="button" disabled class="btn btn-primary" id="proceedbutton3" onclick="Newadmin()">Proceed</button>
+                <button type="button" class="btn btn-primary" id="confirmbutton" style="display: none;" onclick="modify_users()">Confirm</button>
+            </div>
+        </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteAdminModal" tabindex="-1" aria-labelledby="deleteAdminModalLabel" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:#f9fae8;">
+          <div class="modal-header">
+              <h5 class="modal-title" id="deleteAdminModalLabel">Remove Admin</h5>
+          </div>
+          <div class="modal-body" id="newAdminBody" style="padding:25px;">
+              {% include 'Delete_Admin.html' %}
+          </div>
+          <div id="warning2"></div>
+          <div id="EnterPasscode2" style="display: none;justify-self:center;text-align:center;padding-bottom:5px;margin:0;">
+                    <label for="Passcode2">Enter Passcode:</label>
+                    <input type="number" id="passcode2" name="passcode2" min="1" required placeholder="4 digit passcode">
+          </div>
+          <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="reset_modal2()">Close</button>
+                <button type="button" disabled class="btn btn-primary" id="proceedbutton2" onclick="deladmin()">Proceed</button>
+                <button type="button" class="btn btn-primary" id="confirmbutton2" style="display: none;" onclick="delete_admin()">Confirm</button>
+            </div>
+        </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="changeTollModal" tabindex="-1" aria-labelledby="changeTollModalLabel" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
+        <div class="modal-content" style="background:#f9fae8;">
+          <div class="modal-header">
+              <h5 class="modal-title" id="changeTollModalLabel">Change Current Toll Rate</h5>
+          </div>
+          <div class="modal-body" id="newAdminBody" style="padding:25px;">
+              {% include 'Change_Toll.html' %}
+          </div>
+          <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="change_toll_modal()">Close</button>
+                <button type="button" disabled class="btn btn-primary" id="proceedbutton4" onclick="change_toll()">Proceed</button>
+                <button type="button" class="btn btn-primary" id="confirmbutton4" style="display: none;" onclick="change_toll_Rate()">Confirm</button>
+        </div>
+           
+        </div>
+  </div>
+</div>
+
+<div class="modal fade" id="changeDiscountsModal" tabindex="-1" aria-labelledby="changeDiscountsModalLabel" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:#f9fae8;">
+          <div class="modal-header">
+              <h5 class="modal-title" id="changeDiscountsModalLabel">Change Current Discounts</h5>
+          </div>
+          <div class="modal-body" id="changeDiscountsBody" style="padding:25px;">
+            <div style="padding-top:0;margin-top:0;">
+              <div class='row'>
+                <div class='col col-sm-9' id='GlobalDiscount' style="align-self:center;"></div>
+                <button  class='col col-sm-2 btn btn-info' type="button" id="globalChange"  onclick="change_global()" style="max-height:2.5em;">Change</button>
+      
+              </div>
+              
+              <div  id="EnterNewRate" style="display: none;justify-self:left;text-align:left;padding:15px 10px 10px 0px;margin:0;">
+                    <label for="Passcode5">Enter New Rate:</label>
+                    <input type="number" id="GlobalRate" name="GlobalRate" min="0" max='100' required placeholder="New Rate" value="" style="min-width:6em;">
+              </div>
+              <hr>
+            </div>
+              {% include 'Change_Discount.html' %}
+              
+          </div>
+          <div id="DiscountsFooter">
+          <div id="EnterPasscode5" style="display: none;justify-self:center;text-align:center;padding-bottom:5px;margin:0;">
+                    <label for="Passcode5">Enter Passcode:</label>
+                    <input type="number" id="passcode5" name="passcode5" min="1" required placeholder="4 digit passcode">
+          </div>
+          
+          <div class="modal-footer" >
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="reset_modal3()">Close</button>
+                <button type="button" disabled class="btn btn-primary" id="proceedbutton5" onclick="changeCupon()">Proceed</button>
+                <button type="button" class="btn btn-primary" id="confirmbutton5" style="display: none;" onclick="change_discount_rate()">Confirm</button>
+                <button type="button" class="btn btn-primary"  onclick="add_new_cupon()">Add New</button>
+
+            </div>
+          </div>
+        </div>
+  </div>
+</div>
+
 {% endblock content %}
 
 {% block scripts %}
@@ -553,6 +663,11 @@ function Remove_Dp(){
 }
 
 $('#walletModal').on('show.bs.modal', function (event) {
+  if(document.getElementById('RecentTransactions').dataSet==true){
+        return;
+    }else{
+        document.getElementById('RecentTransactions').dataSet= true;
+    }
     $.ajax({
       url: '/get_recent_transactions',
       method: 'GET',
@@ -564,6 +679,264 @@ $('#walletModal').on('show.bs.modal', function (event) {
       }
     });
 });
+
+
+
+$('#newAdminModal').on('show.bs.modal', function (event) {
+  if(document.getElementById('CreateAdmin').dataSet==true){
+        return;
+    }else{
+        document.getElementById('CreateAdmin').dataSet= true;
+    }
+    $.ajax({
+      url: '/users',
+      method: 'GET',
+      success: function (data) {
+          $('#CreateAdmin').html(data);
+        },
+      error: function (error) {
+          var errorDiv = $('<div>', {
+          class: 'alert alert-danger',
+          role: 'alert',
+          style: 'color:black;font-weight:500;text-align:center;',
+          html: error.responseJSON.message // Use .html() to insert the provided HTML
+        });
+        $('#newAdminModal').find('.modal-footer').remove();
+        $('#newAdminModal').find('.modal-body').append(errorDiv);
+      }
+    });
+});
+
+
+$('#deleteAdminModal').on('show.bs.modal', function (event) {
+  if(document.getElementById('DeleteAdmin').dataSet==true){
+        return;
+    }else{
+        document.getElementById('DeleteAdmin').dataSet= true;
+    }
+    $.ajax({
+      url: '/admins',
+      method: 'GET',
+      success: function (data) {
+          $('#DeleteAdmin').html(data);
+        },
+      error: function (error) {
+        var errorDiv = $('<div>', {
+          class: 'alert alert-danger',
+          role: 'alert',
+          style: 'color:black;font-weight:500;text-align:center;',
+          html: error.responseJSON.message // Use .html() to insert the provided HTML
+        });
+        $('#deleteAdminModal').find('.modal-footer').remove();
+        $('#deleteAdminModal').find('.modal-body').append(errorDiv);
+      }
+    });
+});
+
+
+
+$('#changeDiscountsModal').on('show.bs.modal', function (event) {
+  if(document.getElementById('Discounts').dataSet==true){
+        return;
+    }else{
+        document.getElementById('Discounts').dataSet= true;
+    }
+    
+    $.ajax({
+      url: '/verify_user',
+      method: 'GET',
+      success: function (data) {
+            $.ajax({
+              url: '/discounts',
+              method: 'GET',
+              success: function (data) {
+                  $('#GlobalDiscount').text('Global Discounts : '+data.rate+'%');
+                },
+              error: function (error) {
+                $('#GlobalDiscount').text('Global Discounts : '+'Inactive');
+              }
+            });
+            change_Discounts();
+        },
+      error: function (error) {
+          $('#proceedbutton5').prop('disabled', true);
+          $('#Discounts').remove();
+          $('#DiscountsFooter').remove();
+          $('#globalChange').remove();
+          document.getElementById('DiscountsBody').innerHTML=`<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+               ${error.responseJSON.message}
+            </div>`
+      }
+    });
+
+});
+
+
+    $("#passcode").on("input", function() {
+        var inputValue = $(this).val();
+        if(isNaN(parseInt(inputValue))){
+          $(this).val('');
+          return;
+        }
+        if (inputValue.length > 4) {
+            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
+        }
+    });
+    
+    $("#passcode2").on("input", function() {
+       var inputValue = $(this).val();
+        if(isNaN(parseInt(inputValue))){
+          $(this).val('');
+          return;
+        }
+        if (inputValue.length > 4) {
+            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
+        }
+    });
+    $("#passcode4").on("input", function() {
+        var inputValue = $(this).val();
+        if(isNaN(parseInt(inputValue))){
+          $(this).val('');
+          return;
+        }
+        if (inputValue.length > 4) {
+            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
+        }
+    });
+
+    $("#passcode5").on("input", function() {
+        var inputValue = $(this).val();
+        if(isNaN(parseInt(inputValue))){
+          $(this).val('');
+          return;
+        }
+        if (inputValue.length > 4) {
+            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
+        }
+    });
+
+    $("#cuponName").on("input", function() {
+        var inputValue = $(this).val();
+        
+        if (inputValue.length > 8) {
+            $(this).val(inputValue.slice(0, 8)); // Truncate to 4 digits
+        }
+    });
+    
+    $("#cuponRate").on("input", function() {
+        $('#proceedbutton5').prop('disabled', false);
+        var inputValue = $(this).val();
+        if (inputValue.length > 2) {
+            $(this).val(inputValue.slice(0, 2)); 
+        }
+        try{
+          var val=parseInt($(this).val());
+          if (val<=0 ||isNaN(val)) {
+              $(this).val(''); 
+          }
+        }
+         catch{
+            $(this).val(''); 
+         }
+    });
+
+
+    $("#GlobalRate").on("input", function() {
+        $('#proceedbutton5').prop('disabled', false);
+        var inputValue = $(this).val();
+        if (inputValue.length > 3) {
+            $(this).val(inputValue.slice(0, 3)); 
+        }
+        try{
+          var val=parseInt($(this).val());
+          if (val<0 ||isNaN(val)) {
+              $(this).val(''); 
+          }
+          else if(val>100){
+            $(this).val(100); 
+          }
+        }
+         catch{
+            $(this).val(''); 
+         }
+    });
+    
+
+    $(document).on('change', '#CreateAdmin input[type="checkbox"]', function() {
+        // Check if at least one checkbox is checked
+        if ($('#CreateAdmin input[type="checkbox"]:checked').length > 0) {
+            $('#proceedbutton3').prop('disabled', false);
+        } else {
+            $('#proceedbutton3').prop('disabled', true);
+        }
+    });
+
+    $(document).on('change', '#DeleteAdmin input[type="checkbox"]', function() {
+        // Check if at least one checkbox is checked
+        if ($('#DeleteAdmin input[type="checkbox"]:checked').length > 0) {
+            $('#proceedbutton2').prop('disabled', false);
+        } else {
+            $('#proceedbutton2').prop('disabled', true);
+        }
+    });
+
+    $(document).on('change', '#CreateAdmin .suspend-checkbox', function() {
+    // Get the associated email span
+    var emailSpan = $(this).closest('li').find('span#Emailid');
+
+    if ($(this).is(':checked')) {
+        // Checkbox is checked, change email text color to red
+        emailSpan.css('color', 'red');
+    } else {
+        // Checkbox is unchecked, change email text color to blue
+        emailSpan.css('color', 'blue');
+    }
+
+  });
+
+  $(document).on('change', '#CreateAdmin .activate-checkbox', function() {
+    // Get the associated email span
+    var emailSpan = $(this).closest('li').find('span#Emailid');
+
+    if ($(this).is(':checked')) {
+        // Checkbox is checked, change email text color to red
+        emailSpan.css('color', 'blue');
+    } else {
+        // Checkbox is unchecked, change email text color to blue
+        emailSpan.css('color', '#f5ad42');
+    }
+
+  });
+
+
+
+// When the modal is shown, make an AJAX request to get the data
+$("#changeTollModal").on("shown.bs.modal", function () {
+    const tableBody = document.getElementById("TollTableBody");
+    
+    $.ajax({
+        url: "/get_toll_rate",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            if(tableBody.dataSet==true){
+                return;
+            }else{
+                tableBody.dataSet= true;
+            }
+            populateTable(data);
+        },
+        error: function (error) {
+          $('#proceedbutton4').prop('disabled', true);
+          $('#Header').remove();
+          $(changeTollModal).find('.modal-footer').remove();
+          document.getElementById('warnTollchange').innerHTML=`<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+               ${error.responseJSON.message}
+            </div>`;
+        },
+    });
+});
+    
 
 
 </script>

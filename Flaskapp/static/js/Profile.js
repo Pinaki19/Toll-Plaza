@@ -16,8 +16,8 @@ function Add_template(Name, Desc, modal = "none") {
 
 
 function show_super_admin_content() {
-    Add_template('Create Admin', 'Add a new Admin for this system');
-    Add_template('Delete Admin', 'Remove Admin account');
+    Add_template('Modify Users', 'Add a new Admin for the system, Suspend User Accounts', 'data-bs-toggle="modal" data-bs-target="#newAdminModal"');
+    Add_template('Delete Admin', 'Remove Admin account', 'data-bs-toggle="modal" data-bs-target="#deleteAdminModal"');
    
 }
 
@@ -27,14 +27,13 @@ function show_admin_content() {
     elem2.textContent = "ADMIN SECTION";
     elem2.style.color = 'blue';
     document.getElementById("Content-Div").appendChild(elem2);
-    Add_template('Change Toll Rate', 'Modify the current Toll Rates');
-    Add_template('Modify Discounts', 'Issue new or modify existing Discount offers.');
+    Add_template('Change Toll Rate', 'Modify the current Toll Rates', 'data-bs-toggle="modal" data-bs-target="#changeTollModal"');
+    Add_template('Modify Discounts', 'Issue new or modify existing Discount offers.', 'data-bs-toggle="modal" data-bs-target="#changeDiscountsModal"');
     
 }
 
 function show_user_content() {
 
-    
     Add_template('All Transactions', 'Check your lifetime transactions', 'data-bs-toggle="modal" data-bs-target="#RecentModal"');
 
 }
@@ -281,8 +280,6 @@ function Reset() {
                 New: newPin
             };
 
-            console.log("Sending data to server:", JSON.stringify(data));
-
             fetch('/Forgot_wallet_pass', {
                 method: 'POST',
                 headers: {
@@ -293,19 +290,21 @@ function Reset() {
                 .then(function (response) {
                     
                     if (response.ok) {
-                        document.getElementById("Default_pin").textContent = "PIN reset Successful.";
-                        document.getElementById("Default_pin").style.color = '#37fa64';
+                        document.getElementById("Default_pin").innerHTML = `<div class="alert alert-success" role="alert">
+                            PIN Reset Successful !</div>`
                         reset_style();
                     } else {
                         // Handle error response from the server
                         console.error('Failed to reset PIN. Server returned an error.');
-                        alert('Failed to reset PIN. Please try again.');
+                        document.getElementById("Default_pin").innerHTML = `<div class="alert alert-danger" role="alert">
+                                        Failed to Reset PIN !</div>`
                         reset_style();
                     }
                 })
                 .catch(function (error) {
                     console.error('Failed to reset PIN. Error:', error);
-                    alert('Failed to reset PIN. Please try again.');
+                    document.getElementById("Default_pin").innerHTML = `<div class="alert alert-danger" role="alert">
+                                        Failed to Reset PIN !</div>`
                     reset_style();
                 });
         } else {
@@ -365,4 +364,573 @@ $(document).ready(function () {
 });
 
 
+function Newadmin(){
+    document.getElementById('proceedbutton3').style.display='none';
+    document.getElementById('EnterPasscode').style.display="block";
+    document.getElementById('confirmbutton').style.display='inline-block';
+    document.getElementById("warning").innerHTML = `<div class="alert alert-danger" role="alert" style="font-size:15px;color:black;text-align:left;">
+       Anyone selected to become <strong>ADMIN</strong> will now have Admin powers!!<br>
+       Any user with Email marked red will be <strong>SUSPENDED</strong>.<br>
+       Enter your Passcode below and Confirm.</div>`;
+}
+
+
+function deladmin() {
+    document.getElementById('proceedbutton2').style.display = 'none';
+    document.getElementById('EnterPasscode2').style.display = "block";
+    document.getElementById('confirmbutton2').style.display = 'inline-block';
+    document.getElementById("warning2").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+       Anyone selected will now become a normal user!!<br>Enter your Passcode below and Confirm.</div>`
+}
+
+function reset_modal(){
+    document.getElementById('proceedbutton3').style.display = 'inline-block'; 
+    document.getElementById('confirmbutton').style.display = 'none';
+    document.getElementById('EnterPasscode').style.display = "none";
+    document.getElementById("warning").innerHTML='';
+}
+
+
+function reset_modal2() {
+    document.getElementById('proceedbutton2').style.display = 'inline-block';
+    document.getElementById('confirmbutton2').style.display = 'none';
+    document.getElementById('EnterPasscode2').style.display = "none";
+    document.getElementById("warning2").innerHTML = '';
+}
+
+
+function reset_modal3() {
+    document.getElementById('proceedbutton5').style.display = 'inline-block';
+    document.getElementById('confirmbutton5').style.display = 'none';
+    document.getElementById('EnterPasscode5').style.display = "none";
+    document.getElementById("warnDiscountchange").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+               The Discount rates will be changed on confirmation.
+    </div > `;
+    document.getElementById('NewCoupon').style.display = 'none';
+    $('#proceedbutton5').prop('disabled', true);
+    document.getElementById('EnterNewRate').style.display = 'none';
+}
+
+
+function change_toll_modal() {
+    document.getElementById('proceedbutton4').style.display = 'inline-block';
+    document.getElementById('confirmbutton4').style.display = 'none';
+    document.getElementById('EnterPasscode4').style.display = "none";
+    document.getElementById("warnTollchange").innerHTML =`<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+               The Toll rates will be changed. Be careful !!
+    </div>`;
+}
+
+function change_toll(){
+    document.getElementById('proceedbutton4').style.display = 'none';
+    document.getElementById('confirmbutton4').style.display = 'inline-block';
+    document.getElementById('EnterPasscode4').style.display = "block";
+    document.getElementById("warnTollchange").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+        You are about to change the Toll Rates !!
+    </div>`;
+}
+
+function getSelectedEmails() {
+    var selectedEmails = [];
+    $('#CreateAdmin .admin-checkbox:checked').each(function () {
+        var emailId = $(this).data('email'); // Get the data-email attribute
+        selectedEmails.push(emailId);
+    });
+
+    return  selectedEmails ;
+}
+
+
+function getSelectedEmails2() {
+    var selectedEmails = [];
+    $('#DeleteAdmin input[type="checkbox"]:checked').each(function () {
+        var listItem = $(this).closest('li');
+        var email = listItem.find('span#Emailid').text();
+        selectedEmails.push(email);
+    });
+
+    return { data: selectedEmails };
+}
+
+
+
+function modify_users() {
+    // Get the passcode from the input field
+    var passcode = $("#passcode").val();
+    if (passcode.length != 4) 
+        return;
+    // Get the selected emails using the previously defined function
+    var selectedEmails = getSelectedEmails();
+    var activated = getActivatedEmails();
+    var suspended = getSuspendedEmails();
+    
+    
+
+    // Create the JSON object with the required format
+    var dataToSend = {
+        data: selectedEmails,
+        suspend:suspended,
+        activate:activated,
+        Password: passcode
+    };
+    
+    $.ajax({
+        type: "POST",
+        url: "/make_admin", // Replace with the actual URL
+        data: JSON.stringify(dataToSend),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            // Handle the success response here
+            document.getElementById("CreateAdmin").dataset = false;
+            console.log("Admins created successfully:", response);
+            var warningElement = document.getElementById("warning");
+            warningElement.innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${response.message}
+            </div>`;
+            //reset_modal();
+            setTimeout(function(){location.reload()},1700);
+            // Optionally, you can perform additional actions after a successful request.
+        },
+        error: function (error) {
+            // Handle any errors that occur during the AJAX request
+            console.error("Error creating admins:", error.responseJSON);
+            var warningElement = document.getElementById("warning");
+            warningElement.innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${error.responseJSON.message}
+            </div>`;
+            // Optionally, you can display an error message or take corrective actions.
+        }
+    });
+}
+
+
+
+function delete_admin() {
+    // Get the passcode from the input field
+    var passcode = $("#passcode2").val();
+    if (passcode.length != 4)
+        return;
+    // Get the selected emails using the previously defined function
+    var selectedEmails = getSelectedEmails2();
+    if (selectedEmails.data.length == 0) {
+        reset_modal2();
+        return;
+    }
+
+    // Create the JSON object with the required format
+    var dataToSend = {
+        data: selectedEmails.data,
+        Password: passcode
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/delete_admin", // Replace with the actual URL
+        data: JSON.stringify(dataToSend),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            // Handle the success response here
+            document.getElementById("DeleteAdmin").dataset = false;
+            console.log("Admins deleted successfully:", response);
+            var warningElement = document.getElementById("warning2");
+            warningElement.innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${response.message}
+            </div>`;
+            setTimeout(function () { location.reload() }, 1700);
+            // Optionally, you can perform additional actions after a successful request.
+        },
+        error: function (error) {
+            // Handle any errors that occur during the AJAX request
+            console.error("Error deleting admins:", error.responseJSON);
+            var warningElement = document.getElementById("warning2");
+            warningElement.innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${error.responseJSON.message}
+            </div>`;
+            // Optionally, you can display an error message or take corrective actions.
+        }
+    });
+}
+
+
+function formatVehicleTypeName(name) {
+    if (name.startsWith("axel")) {
+        const parts = name.split("_");
+
+        if (parts.length > 2)
+            return `${parts[1]} to ${parts[2]} Axel`;
+        return `${parts[1]} Axel`
+    } else {
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+}
+
+function resetToOriginal(dataItem, originalItem) {
+    for (const category of ["single", "return", "monthly"]) {
+        dataItem[category] = originalItem[category];
+    }
+}
+
+var dataArray=[];
+function populateTable(jsonData) {
+    // Get the table body element
+    dataArray = [];
+    var originalDataArray = JSON.parse(JSON.stringify(jsonData));
+    const tableBody = document.getElementById("TollTableBody");
+  
+    for (const vehicleType in jsonData) {
+        const vehicleData = jsonData[vehicleType];
+        dataArray.push({
+            vehicleType: vehicleType,
+            ...vehicleData,
+        });
+        
+    }
+    
+    // Sort the array by the "single" category in ascending order
+    dataArray.sort((a, b) => a.single - b.single);
+
+    // Iterate through the sorted array and create table rows
+    dataArray.forEach((dataItem) => {
+        const newRow = document.createElement("tr");
+
+        const vehicleTypeCell = document.createElement("td");
+        vehicleTypeCell.textContent = formatVehicleTypeName(dataItem.vehicleType);
+        vehicleTypeCell.style.paddingLeft="15px";
+        newRow.appendChild(vehicleTypeCell);
+
+        // Create a cell for each rate category
+        ["single", "return", "monthly"].forEach((category) => {
+            const cell = document.createElement("td");
+
+            // Create a container div to hold the input and original value
+            const container = document.createElement("div");
+            container.className = "input-group";
+
+            // Create an input element
+            const input = document.createElement("input");
+            input.type = "number";
+            
+            input.value = dataItem[category];
+            input.className = "form-control"; // You can add Bootstrap classes for styling
+            input.min = 1;
+            // Create a span to display the original value
+            const originalValueSpan = document.createElement("span");
+            originalValueSpan.className = "input-group-text";
+            var vehicle = dataItem.vehicleType;
+            originalValueSpan.textContent = originalDataArray[vehicle][category];
+
+            input.addEventListener("input", (event) => {
+                // Ensure the input is a valid positive number
+                const newValue = parseFloat(event.target.value);
+
+                if (isNaN(newValue) || newValue <= 0) {
+                    event.target.value = '';
+                    // Reset to the original value from originalDataArray
+                    dataItem[category] = originalDataArray[vehicle][category];
+                    $('#proceedbutton4').prop('disabled', true);
+                } else {
+                    $('#proceedbutton4').prop('disabled', false);
+                    dataItem[category] = newValue;
+                }
+                
+            });
+
+            // Append the input and original value to the container
+            container.appendChild(input);
+            container.appendChild(originalValueSpan);
+
+            // Append the container to the cell
+            cell.appendChild(container);
+            newRow.appendChild(cell);
+        });
+
+        tableBody.appendChild(newRow);
+    });
+}
+
+
+function change_toll_Rate(){
+    const passcode = parseInt(document.getElementById("passcode4").value);
+    if(String(passcode).length!=4){
+        return;
+    }
+    change_toll_rate(passcode);
+}
+
+function change_toll_rate(passcode) {
+    const url = "/update_toll_rate"; // Replace with the actual URL of your Flask endpoint
+    const payload = {
+        Password: passcode, // Replace with your actual password
+        dataArray: dataArray, // The data array you want to update
+    };
+    const warningElement = document.getElementById('warnTollchange');
+    $.ajax({
+        url: url,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(payload),
+        success: function (data) {
+            if (data && data.message) {
+                document.getElementById("TollTableBody").dataset=false;
+                // Update the warningElement with the response message
+                warningElement.innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${data.message}</div>`;
+                console.log(data.message);
+                setTimeout(function () { location.reload() }, 1700);
+            } else {
+                console.error("Response does not contain a message.");
+            }
+        },
+        error: function (error) {
+            // Handle any errors that occur during the AJAX request
+            console.error("Error changing Toll rate:", error.responseJSON);
+            warningElement.innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${error.responseJSON.message}
+            </div>`;
+            // Optionally, you can display an error message or take corrective actions.
+        }
+    });
+}
+
+var originalData,currentData;
+function change_Discounts(){
+    $.ajax({
+        url: '/get_cupons',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            const discountsTable = $('#DiscountTableBody');
+            if (data.success && data.data && data.data.length > 0) {
+                originalData = JSON.parse(JSON.stringify(data.data));
+                currentData = JSON.parse(JSON.stringify(data.data));
+                var delCount = 0;
+                $.each(data.data, function (index, coupon) {
+                    const [couponName, currentRate] = coupon;
+                    const newRow = document.createElement("tr");
+                    newRow.style.justifyContent ="space-around";
+                    const Couponcell = document.createElement("td");
+                    Couponcell.textContent = couponName.toUpperCase();
+                    Couponcell.style.paddingLeft = "3em";
+                    newRow.appendChild(Couponcell);
+                    const containerparent = document.createElement("td");
+                    containerparent.style.paddingLeft = "2em";
+                    const container = document.createElement("div");
+                    container.style.maxWidth = "6em";
+                    container.style.minWidth = "3em";
+                    container.className = "input-group";
+
+                    // Create an input element
+                    const input = document.createElement("input");
+                    input.type = "number";
+
+                    input.value = currentRate;
+                    input.className = "form-control"; // You can add Bootstrap classes for styling
+                    input.min = 1;
+                    // Create a span to display the original value
+                    const container2parent = document.createElement("td");
+                    container2parent.style.paddingLeft = "2em";
+                    const container2 = document.createElement("div");
+                    
+                    container2.style.maxWidth="6em";
+                    container2.style.minWidth = "3em";
+                    const originalValueSpan = document.createElement("span");
+                    originalValueSpan.className = "input-group-text";
+                    originalValueSpan.style.paddingLeft='2.1em';
+                    originalValueSpan.textContent = parseInt(originalData[index][1])+'%';
+                    
+                    // Add a delete button
+                    const container3 = document.createElement("td");
+                    const deleteButton = document.createElement("button");
+                    deleteButton.style.marginTop='5px';
+                    deleteButton.textContent = "Delete";
+                    deleteButton.className = "btn btn-danger btn-sm ";
+                    
+                    deleteButton.addEventListener("click", function () {
+                        if (deleteButton.textContent === "Delete"){
+                            delCount++;
+                            Couponcell.style.color = "red";
+                            currentData[index][1] = -99;
+                            originalValueSpan.style.background = 'red';
+                            originalValueSpan.style.color = 'white';
+                            $('#proceedbutton5').prop('disabled', false);
+                            deleteButton.textContent = "Cancel";
+                            deleteButton.className = "btn btn-info btn-sm ";
+                            document.getElementById('warnDiscountchange').innerHTML =`<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+                               The Cupons marked Red will be Deleted
+                            </div>`;
+                            
+                        }else{
+                            delCount--;
+                            Couponcell.style.color = "";
+                            currentData[index][1] = originalData[index][1];
+                            originalValueSpan.style.background = '';
+                            originalValueSpan.style.color = '';
+                            if(delCount==0){
+                                $('#proceedbutton5').prop('disabled', true);
+                                document.getElementById('warnDiscountchange').innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+                                    The Discount rates will be changed on confirmation.
+                                </div>`;
+                            }
+        
+                            deleteButton.textContent = "Delete";
+                            deleteButton.className = "btn btn-danger btn-sm ";
+                        }
+                        
+                    });
+
+                    input.addEventListener("input", (event) => {
+                        // Ensure the input is a valid positive number
+                        const newValue = parseFloat(event.target.value);
+
+                        if (isNaN(newValue) || newValue <= 0 ||newValue>=100) {
+                            event.target.value = '';
+                            // Reset to the original value from originalDataArray
+                            currentData[index][1] = originalData[index][1];
+                            $('#proceedbutton5').prop('disabled', true);
+                        } else {
+                            $('#proceedbutton5').prop('disabled', false);
+                            currentData[index][1] = newValue;
+                        }
+                        console.log(currentData);
+                    });
+
+                    // Append the input and original value to the container
+                    container.appendChild(input);
+                    container2.appendChild(originalValueSpan);
+                    containerparent.appendChild(container);
+                    container2parent.appendChild(container2);
+                    newRow.appendChild(containerparent);
+                    newRow.appendChild(container2parent);
+                    container3.appendChild(deleteButton);
+                    newRow.appendChild(container3);
+                    discountsTable.append(newRow);
+                });
+                
+            } else {
+                // Handle the case where there are no coupons or an error occurred
+                const noDiscountsMessage = $('<p>').text('No coupons available');
+                discountsTable.append(noDiscountsMessage);
+            }
+        },
+        error: function (error) {
+            console.error('Error:', error);
+        },
+    });
+}
+
+function changeCupon(){
+    document.getElementById('proceedbutton5').style.display = 'none';
+    document.getElementById('confirmbutton5').style.display = 'inline-block';
+    document.getElementById('EnterPasscode5').style.display = "block";
+    document.getElementById("warnDiscountchange").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+        You are about to change Discount rates!! <br> Provide passcode below to confirm.
+    </div>`;
+}
+
+function change_cupon_rate(){
+    const passcode = parseInt(document.getElementById("passcode5").value);
+    if (String(passcode).length != 4) {
+        return;
+    }
+}
+
+function add_new_cupon(){
+    document.getElementById('NewCoupon').style.display='block';
+    $('#proceedbutton5').prop('disabled', false);
+}
+
+function change_global(){
+    if (document.getElementById("globalChange").innerText=="Change"){
+        document.getElementById('EnterNewRate').style.display = 'block';
+        document.getElementById("globalChange").innerText = "Cancel";
+    }
+    else{
+        document.getElementById('EnterNewRate').style.display = 'none';
+        document.getElementById("globalChange").innerText = "Change";
+    }
+}
+
+function change_discount_rate(){
+    var globalRate = document.getElementById("GlobalRate").value;
+    var couponName = document.getElementById('cuponName').value;
+    var newcuponRate = document.getElementById('cuponRate').value;
+    var Rate = parseInt(globalRate);
+    var cuponRate=parseInt(newcuponRate);
+    if (globalRate.length == 0 || isNaN(Rate) || Rate >= 100 || Rate < 0) {
+        Rate = -1;
+    }
+    if(newcuponRate.length==0||cuponRate<=0||cuponRate>100){
+        cuponRate=0;
+    }
+    console.log(Rate,currentData,couponName,cuponRate);
+    const passcode=document.getElementById('passcode5').value;
+    if(passcode.length!=4||isNaN(parseInt(passcode))){
+        return;
+    }
+    var payload={
+        Global:Rate,
+        Password:passcode,
+        NewCupon:couponName,
+        NewRate:cuponRate,
+        TollRate: convertToKeyValuePairs(currentData)
+    }
+    console.log(payload);
+    var warningElement = document.getElementById("warnDiscountchange");
+    $.ajax({
+        url: '/modify_discounts',
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(payload),
+        success: function (data) {
+            console.log(data.message);
+            warningElement.innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${data.message}</div>`;
+            setTimeout(function () { location.reload() }, 1700);
+        },
+        error: function (xhr,status,error) {
+            // Handle any errors that occur during the AJAX request
+            warningElement.innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${error.responseJSON.message}
+            </div>`;
+            // Optionally, you can display an error message or take corrective actions.
+        }
+    });
+}
+
+function convertToKeyValuePairs(twoDList) {
+    const keyValuePairs = {};
+
+    for (let i = 0; i < twoDList.length; i++) {
+        const row = twoDList[i];
+        if (row.length >= 2) {
+            const key = row[0];
+            const value = row[1];
+            keyValuePairs[key] = value;
+        }
+    }
+
+    return keyValuePairs;
+}
+
+function getSuspendedEmails() {
+    var selectedEmails = [];
+    $('#CreateAdmin .suspend-checkbox:checked').each(function () {
+        const email = $(this).data('email');
+        selectedEmails.push(email);
+    });
+    //console.log(selectedEmails);
+    return selectedEmails;
+}
+
+function getActivatedEmails() {
+    var selectedEmails = [];
+    $('#CreateAdmin .activate-checkbox:checked').each(function () {
+        const email = $(this).data('email');
+        selectedEmails.push(email);
+    });
+    //console.log(selectedEmails);
+    return selectedEmails;
+}
 

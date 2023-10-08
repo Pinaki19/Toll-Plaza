@@ -317,23 +317,29 @@ function validateMobile() {
 }
 
 
-
 function get_cupons() {
   fetch('/get_cupons')
     .then(response => response.json())
     .then(data => {
       if (data.data && data.data.length > 0) {
-        const cuponNames = data.data.map(cuponName => cuponName.charAt(0).toUpperCase() + cuponName.slice(1));
+        const cupons = data.data;
         const showCuponsDiv = document.getElementById('ShowCupons');
 
-        // Join the capitalized cupon names with commas and set as text content
-        showCuponsDiv.textContent = 'Cupons available : ' + cuponNames.join(' | ');
+        // Map the coupon data to formatted strings
+        const formattedCupons = cupons.map(cupon => {
+          const [name, value] = cupon;
+          return `${name.charAt(0).toUpperCase() + name.slice(1)} - ${value}%`;
+        });
+
+        // Join the formatted coupon strings with commas and set as text content
+        showCuponsDiv.textContent = 'Coupons available: ' + formattedCupons.join(' | ');
       } else {
-        // Handle the case where there are no cupon names
-        console.log('No cupon names available');
+        // Handle the case where there are no coupon names
+        console.log('No coupon names available');
       }
     })
     .catch(error => {
       console.error('Error:', error);
     });
 }
+

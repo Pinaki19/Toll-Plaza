@@ -67,6 +67,16 @@ def turn_into_num(str):
     return s
 
 
+def format_vehicle_type_name(name):
+    if name.startswith("axel"):
+        parts = name.split("_")
+
+        if len(parts) > 2:
+            return f"{parts[1]} to {parts[2]} Axel"
+        return f"{parts[1]} Axel"
+    else:
+        return name.capitalize()
+
 def get_cupon_discount_rate(val):
     mongo3 = PyMongo(
         app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
@@ -162,13 +172,50 @@ def Register_user(name, email, gender, mobile):
                     'Profile_Url': '651808ba72d9dd5d64c4ebd1'})
 
   Recieved.update(
-      {'IsAdmin': False, "IsSuperAdmin": False, 'RegistrationDate': datetime.now(), 'Address': ' '})
+      {'IsAdmin': False, "IsSuperAdmin": False,"Suspended":False, 'RegistrationDate': datetime.now(), 'Address': ' '})
   db.UserData.insert_one(Recieved)
   wallet = {'Name': name, 'Email': Recieved['Email'], 'Default': True, 'PIN': 1234 ^ (
       turn_into_num(email)), 'Balance': 0.00, 'Added': 0.00, 'Spent': 0.00, 'Transactions': []}
   db.UserWallets.insert_one(wallet)
   return jsonify("Sucesss")
 
+
+def get_users_from_mongodb():
+    collection=db.UserData
+    # Projection to include only specific fields
+    projection = {
+        "_id": 0,          # Exclude _id field
+        "Gender": 0,
+        "Mobile": 0, "Defualt_Profile": 0, "Profile_Url": 0,
+        "RegistrationDate": 0, "Address": 0, "image_id": 0, "transactions": 0,
+    }
+
+    # Fetch documents with the specified projection
+    users = list(collection.find({}, projection))
+    l=[]
+    for user in users:
+        if not (user['IsAdmin'] or user['IsSuperAdmin']):
+            l.append(user)
+    return l
+
+
+def get_admins_from_mongodb():
+    collection = db.UserData
+    # Projection to include only specific fields
+    projection = {
+        "_id": 0,          # Exclude _id field
+        "Gender": 0,
+        "Mobile": 0, "Defualt_Profile": 0, "Profile_Url": 0,
+        "RegistrationDate": 0, "Address": 0, "image_id": 0, "transactions": 0,
+    }
+
+    # Fetch documents with the specified projection
+    users = list(collection.find({}, projection))
+    l=[]
+    for user in users:
+        if user['IsAdmin']:
+            l.append(user)
+    return l
 # ----------------------------------------------------------------------------------------------------------------
 
 
@@ -388,7 +435,8 @@ def login():
 
     # Simplified authentication (replace with your authentication logic)
     user = db.UserData.find_one({"Email": email})
-   
+    if (user["Suspended"]):
+        return jsonify({'code': 401, 'message': 'User Account is Suspended. Contact Us for more Info.'}), 401
     try:
         user = auth.sign_in_with_email_and_password(email, password)
         # Get user info and check if email is verified
@@ -509,10 +557,31 @@ def check_login():
 
 @app.route('/get_toll_rate')
 def get_rate():
+    if 'email' not in session:
+        abort(401)
+
+    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
+    db = mongo.db
+    user = db.UserData.find_one({'Email': session.get('email')})
+    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
+        return jsonify({"message": "Unauthorized Access!!"}), 401
+
     mongo2= PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
     db=mongo2.db
     object_id = ObjectId("6510916ca24f1f9870537d5f")
     return jsonify(db.Rate.find_one({"_id": object_id},{"_id":False}))
+
+@app.get('/verify_user')
+def verify():
+    if 'email' not in session:
+        abort(401)
+
+    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
+    db = mongo.db
+    user = db.UserData.find_one({'Email': session.get('email')})
+    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
+        return jsonify({"message": "Unauthorized Access!!"}), 401
+    return 'ok',200
 
 
 @app.route('/discounts')
@@ -780,15 +849,16 @@ def update_wallet():
 
 @app.get('/get_cupons')
 def get_cupon_names():
-    return jsonify({'success':False}),400
     mongo3 = PyMongo(
         app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
     db = mongo3.db
     obj = db.Cupons.find()
     for item in obj:
-        data=list(item.keys())
+        del item['_id']
+        data=list(item.items())
+        data.sort(key=lambda a:a[0],reverse=True)
         break
-    data.remove("_id")
+    
     return jsonify({'success':True,'data':data})
  
  
@@ -827,6 +897,237 @@ def load_recent_transactions():
             return jsonify({'success': False})
     else:
         return jsonify({'success': False, 'message': 'User not logged in'})
+
+#----------------------------------------- super admin------------------------------------------------------------
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    if 'email' not in session:
+        abort(401)
+    user=db.UserData.find_one({'Email':session.get('email')})
+   
+    if not user['IsSuperAdmin']:
+        return jsonify({'message':'Unauthorized Access!!'}),401
+    users = list(get_users_from_mongodb())
+    return render_template('Create_Admin.html',users=users)
+
+
+@app.route('/admins', methods=['GET'])
+def get_admins():
+    if 'email' not in session:
+        abort(401)
+    user = db.UserData.find_one({'Email': session.get('email')})
+
+    if not user['IsSuperAdmin']:
+        return jsonify({'message': 'Unauthorized Access!!'}), 401
+    users = list(get_admins_from_mongodb())
+    return render_template('Delete_Admin.html', users=users)
+
+
+
+# Define a route to make new admins
+@app.route('/make_admin', methods=['POST'])
+def make_admins():
+    if 'email' not in session:
+        abort(401)
+    user = db.UserData.find_one({'Email': session.get('email')})
+
+    if not user['IsSuperAdmin']:
+        abort(401)
+    
+    data = request.get_json()
+    if not data or 'data' not in data or 'Password' not in data:
+        return jsonify({"error": "Invalid JSON data"}), 400
+    email_list = data['data']
+    if len(data['Password']) !=4:
+        return jsonify({'message': "Provide Passcode"}), 400
+    try:
+        password=int(data['Password'])
+    except:
+        return jsonify({'message':"Wrong Passcode"}),401
+    
+    object_id = ObjectId("6521104419f8ab8aac121d6e")
+    key= db.SuperAdminKey.find_one({"_id": object_id})['key']
+    if(password!=key):
+        return jsonify({'message': "Wrong Passcode"}), 400
+   
+    current_user_data = db.UserData.find_one({'Email': session.get('email')})
+    if not current_user_data or not current_user_data.get("IsSuperAdmin"):
+        return jsonify({"message": "Unauthorized Access"}), 401
+
+    suspend=data.get('suspend')
+    activate=data.get('activate')
+    collection=db.UserData
+    for email in suspend:
+        collection.update_one(
+            {"Email": email.lower()}, {"$set": {"Suspended": True}})
+    for email in activate:
+        collection.update_one(
+            {"Email": email.lower()}, {"$set": {"Suspended": False}})
+    for email in email_list:
+        if email not in suspend:
+            collection.update_one(
+                {"Email": email.lower()}, {"$set": {"IsAdmin": True}})
+        
+    return jsonify({"message": "Users updated successfully"})
+
+
+# Define a route to delete admin privileges
+@app.route('/delete_admin', methods=['POST'])
+def delete_admin():
+    # Check if the user is authenticated
+    if 'email' not in session:
+        abort(401)
+
+    # Check if the user is a super admin
+    user = db.UserData.find_one({'Email': session.get('email')})
+    if not user or not user['IsSuperAdmin']:
+        abort(401)
+
+    # Get the data from the POST request
+    data = request.get_json()
+    if not data or 'data' not in data:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    email_list = data['data']
+    if len(email_list) == 0:
+        return jsonify({'message': "Bad request"}), 400
+    if len(data['Password']) !=4:
+        return jsonify({'message': "Provide Passcode"}), 400
+    try:
+        password=int(data['Password'])
+    except:
+        return jsonify({'message':"Wrong Passcode"}),401
+    
+    object_id = ObjectId("6521104419f8ab8aac121d6e")
+    key = db.SuperAdminKey.find_one({"_id": object_id})['key']
+    if (password != key):
+        return jsonify({'message': "Wrong Passcode"}), 400
+    # Update the IsAdmin field for the specified emails to False
+    collection = db.UserData
+    for email in email_list:
+        collection.update_one({"Email": email.lower()}, {
+                              "$set": {"IsAdmin": False}})
+
+    return jsonify({"message": "Admin privileges removed successfully"})
+
+
+#----------------------------------------------------Admin---------------------------------------------------
+
+@app.route('/update_toll_rate', methods=['POST'])
+def update_toll_rate():
+    # Check if the user is authenticated
+    if 'email' not in session:
+        abort(401)
+
+    # Check if the user is a super admin
+    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
+    db = mongo.db
+    user = db.UserData.find_one({'Email': session.get('email')})
+    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
+        return jsonify({"message": "Unauthorized Access!!"}),401
+    try:
+        # Get the JSON data from the request
+        data = request.json
+        object_id = ObjectId("6521102ce322c40be74694b2")
+        key = db.AdminKey.find_one({"_id": object_id})['key']
+        key2 = db.SuperAdminKey.find_one(
+            {"_id": ObjectId("6521104419f8ab8aac121d6e")})['key']
+        # Check if the provided password is correct (replace 'your_password' with your actual password)
+        passcode = int(data.get('Password'))
+        if passcode == key2 and not user['IsSuperAdmin']:
+            return jsonify({"message": "Wrong Passcode"}), 401
+        if passcode != key and passcode!=key2:
+            return jsonify({"message": "Wrong Passcode"}), 401
+
+        dataArray = data.get('dataArray')
+        # Validate dataArray to ensure no negative values
+        for item in dataArray:
+            for category in ["single", "return", "monthly"]:
+                if item.get(category) is not None and item[category] < 0:
+                    return jsonify({"message": f"Negative value in {category} for {format_vehicle_type_name(item['vehicleType'])}. Please enter a non-negative value."}), 400
+            if item['single'] >= item['return'] :
+                return jsonify({"message": f"Invalid rate values for {format_vehicle_type_name(item['vehicleType'])}. Please ensure that single rate is less than return rate."}), 400
+            if item['return'] >= item['monthly']:
+                return jsonify({"message": f"Invalid rate values for {format_vehicle_type_name(item['vehicleType'])}. Please ensure that return rate is less than monthly rate."}), 400
+        mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+        db = mongo2.db
+        collection=db.Rate
+        # Update the MongoDB document based on the dataArray
+        # Assuming you have a document with a specific ObjectId you want to update (replace 'your_object_id' with the actual ObjectId)
+        object_id = ObjectId("6510916ca24f1f9870537d5f")
+        for item in dataArray:
+            vehicle_type = item['vehicleType']
+            update_data = {
+                'single': float(item['single']), 'return': float(item['return']), 'monthly': float(item['monthly'])
+            }
+            # Update the specific vehicle type data in the MongoDB collection
+            collection.update_one({'_id': ObjectId(object_id)}, {
+                                '$set': {vehicle_type: update_data}})
+            update_data.clear()
+        return jsonify({"message": "Toll Rate updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Internal Server Error"}),500
+
+
+@app.post("/modify_discounts")
+def modify_discounts():
+    data=request.get_json()
+    if 'email' not in session:
+        abort(401)
+
+    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
+    db = mongo.db
+    user = db.UserData.find_one({'Email': session.get('email')})
+    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
+        return jsonify({"message": "Unauthorized Access!!"}), 401
+
+    try:
+        # Get the JSON data from the request
+        data = request.json
+        object_id = ObjectId("6521102ce322c40be74694b2")
+        key = db.AdminKey.find_one({"_id": object_id})['key']
+        key2 = db.SuperAdminKey.find_one(
+            {"_id": ObjectId("6521104419f8ab8aac121d6e")})['key']
+        passcode = int(data.get('Password'))
+        if passcode == key2 and not user['IsSuperAdmin']:
+            return jsonify({"message": "Wrong Passcode"}), 401
+        if passcode != key and passcode != key2:
+            return jsonify({"message": "Wrong Passcode"}), 401
+        
+        mongo3 = PyMongo(
+            app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
+        db = mongo3.db
+        GlobalDiscount=data.get('Global')
+        Newcupon=data.get('NewCupon')
+        Newrate = data.get('NewRate')
+        Tollrate=data.get('TollRate')
+        
+        if GlobalDiscount>=0 and GlobalDiscount<100:
+            db.Discount.update_one({"_id": ObjectId('6510a31f5c761cfa640a15f0')}, {
+                '$set': {'discountRate':float(round(GlobalDiscount,2))}})
+        if len(Newcupon) > 8 and not Newcupon.isalnum():
+            return jsonify({'message': 'Coupon should be atmost 8 characters and Alphanumeric.'}), 400
+        elif len(Newcupon)>0 and len(Newcupon)<10 and Newrate>0 and Newrate<=100:
+            db.Cupons.update_one({"_id": ObjectId('6511c1e74b3276cf2afcf700')},
+                {'$set':{Newcupon:int(Newrate)}})
+
+        for key in Tollrate :
+            if not key.isalnum():
+                continue
+            elif int(Tollrate[key])<=0:
+                db.Cupons.update_one(
+                    {"_id": ObjectId('6511c1e74b3276cf2afcf700')},
+                    {'$unset': {key: ""}} )
+            else:
+                db.Cupons.update_one({"_id": ObjectId('6511c1e74b3276cf2afcf700')},
+                                     {'$set': {key: int(Tollrate[key])}})
+        
+        return jsonify({'message': 'Updates Sucessfull'}), 200
+    
+    except Exception as e:
+        return jsonify({"message": "Internal Server Error"}), 500
 
 
 @app.route('/', methods=['GET'])
