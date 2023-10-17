@@ -89,9 +89,9 @@
             height:auto;
             min-height: 30px;
             width: 25px;
-            height: 98%;
+            
             position: relative;
-            top:1px;
+
             text-align: center;
             background-color: #64b4e9;
             border-radius: 5px 0px 0px 5px;
@@ -188,3 +188,10 @@
         }
 }
  
+.custom-modal-dialog {
+    min-width: 600px;
+
+    /* Set your desired width here */
+    width: 100%;
+    /* You can adjust this as needed */
+}

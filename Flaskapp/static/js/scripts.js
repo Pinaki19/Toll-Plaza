@@ -1,16 +1,17 @@
-async function check_login(){
-  let response=await fetch('/Check_login');
-  get_cupons();
-  if(!response.ok){
-    document.getElementById('Sign_up').innerHTML="Sign Up";
-    document.getElementById('Login').innerHTML = 'Login';
-    document.getElementById('Profile').addEventListener('click', showLoginModal);
-    document.getElementById('Wallet').addEventListener('click', showLoginModal);
-    document.getElementById('History').addEventListener('click', showLoginModal);
-    
-    return false;
+async function getEmail() {
+  let response = await fetch('/Check_login');
+  if (response.ok) {
+    let data = await response.json();
+    return data; 
   }
-  else{
+  return null;
+}
+
+
+async function check_login(){
+  let data = await getEmail();
+  get_cupons();
+  if (data) {
     document.getElementById('Login').remove();
     document.getElementById('Sign_up').remove();
     document.getElementById('Profile').href = '/profile';
@@ -18,7 +19,15 @@ async function check_login(){
     document.getElementById('History').href = '/profile';
     return true;
   }
-  
+  else{
+    
+    document.getElementById('Sign_up').innerHTML = "Sign Up";
+    document.getElementById('Login').innerHTML = 'Login';
+    document.getElementById('Profile').addEventListener('click', showLoginModal);
+    document.getElementById('Wallet').addEventListener('click', showLoginModal);
+    document.getElementById('History').addEventListener('click', showLoginModal);
+    return false;
+  }
   
 }
 
@@ -341,5 +350,67 @@ function get_cupons() {
     .catch(error => {
       console.error('Error:', error);
     });
+}
+
+function validateForm() {
+  var email = document.getElementById('contactemail').value;
+  var message = document.getElementById('contactmessage').value;
+
+  // Check if email is valid and message is at least 5 characters long
+  var isValidEmail = ValidateEmail(email);
+  var isMessageValid = message.length >= 5;
+
+  // Enable or disable the "Proceed" button based on validation results
+  $('#proceedbutton2').prop('disabled', !(isValidEmail && isMessageValid));
+}
+
+function submitContactForm() {
+  var email = document.getElementById('contactemail').value;
+  var message = document.getElementById('contactmessage').value;
+
+  var formData = {
+    email: email,
+    message: message
+  };
+
+  // Send the data to the Flask endpoint using AJAX
+  $.ajax({
+    type: "POST",
+    url: "/make_query", // Replace with the actual URL
+    data: JSON.stringify(formData),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (response) {
+      document.getElementById("Reply1").innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
+                ${response.message} <br> Unregistered user queries will be resolved via mail.
+            </div>`;
+      setTimeout(function () { $('#ContactModal').modal('hide'); }, 4000);
+
+    },
+    error: function (error) {
+      document.getElementById("Reply1").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+                Some Error occurred. Try Again!
+            </div>`;
+    }
+  });
+}
+
+function ValidateEmail(input) {
+  var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+  return input.match(validRegex) != null;
+}
+
+
+function validateForm() {
+  var email = document.getElementById('contactemail').value;
+  var message = document.getElementById('contactmessage').value;
+
+  // Check if email is valid and message is at least 5 characters long
+  var isValidEmail = ValidateEmail(email);
+  var isMessageValid = message.length >= 5;
+
+  // Enable or disable the "Proceed" button based on validation results
+  $('#SendMessage').prop('disabled', !(isValidEmail && isMessageValid));
 }
 

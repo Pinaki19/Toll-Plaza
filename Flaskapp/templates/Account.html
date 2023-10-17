@@ -313,9 +313,12 @@
           <div class="modal-header">
               <h5 class="modal-title" id="changeTollModalLabel">Change Current Toll Rate</h5>
           </div>
+          
           <div class="modal-body" id="newAdminBody" style="padding:25px;">
               {% include 'Change_Toll.html' %}
+              
           </div>
+          
           <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="change_toll_modal()">Close</button>
                 <button type="button" disabled class="btn btn-primary" id="proceedbutton4" onclick="change_toll()">Proceed</button>
@@ -344,22 +347,37 @@
                     <label for="Passcode5">Enter New Rate:</label>
                     <input type="number" id="GlobalRate" name="GlobalRate" min="0" max='100' required placeholder="New Rate" value="" style="min-width:6em;">
               </div>
-              <hr>
+              
+              <div id="NewCoupon" style="display: none;justify-self:center;text-align:left;padding:5px;padding-left:35px;margin:0;">
+                            <label for="Newcuponname">Coupon Name:</label>
+                            <input type="text" id="cuponName" name="cuponName"  required placeholder="New Coupon name" style="max-width:10em;" value=''>
+                            <br>
+                            <label for="Newcuponrate" style="padding-right:5px;padding-top:10px;">Discount Rate:</label>
+                            <input type="number" id="cuponRate" name="cuponRate" min="1" max="100" required placeholder="discount Rate" style="width:10em;" value=''>
+            
+              </div>
+       <hr>
             </div>
               {% include 'Change_Discount.html' %}
               
           </div>
+          
+        
           <div id="DiscountsFooter">
           <div id="EnterPasscode5" style="display: none;justify-self:center;text-align:center;padding-bottom:5px;margin:0;">
                     <label for="Passcode5">Enter Passcode:</label>
                     <input type="number" id="passcode5" name="passcode5" min="1" required placeholder="4 digit passcode">
           </div>
           
+    <div id="EnterPasscode5" style="display: none;justify-self:center;text-align:left;padding-top:20px;padding-left:35px;margin:0;">
+                    <label for="Passcode5">Enter Passcode:</label>
+                    <input type="number" id="passcode5" name="passcode5" min="1" required placeholder="4 digit passcode" style="max-width:10em;">
+    </div>
           <div class="modal-footer" >
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="reset_modal3()">Close</button>
                 <button type="button" disabled class="btn btn-primary" id="proceedbutton5" onclick="changeCupon()">Proceed</button>
                 <button type="button" class="btn btn-primary" id="confirmbutton5" style="display: none;" onclick="change_discount_rate()">Confirm</button>
-                <button type="button" class="btn btn-primary"  onclick="add_new_cupon()">Add New</button>
+                <button type="button" class="btn btn-primary" id="ADDnew" onclick="add_new_cupon()">Add New</button>
 
             </div>
           </div>
@@ -736,7 +754,8 @@ $('#deleteAdminModal').on('show.bs.modal', function (event) {
 
 
 $('#changeDiscountsModal').on('show.bs.modal', function (event) {
-  if(document.getElementById('Discounts').dataSet==true){
+  try{
+    if(document.getElementById('Discounts').dataSet==true){
         return;
     }else{
         document.getElementById('Discounts').dataSet= true;
@@ -765,10 +784,14 @@ $('#changeDiscountsModal').on('show.bs.modal', function (event) {
           $('#globalChange').remove();
           document.getElementById('DiscountsBody').innerHTML=`<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
                ${error.responseJSON.message}
-            </div>`
+            </div>`;
       }
     });
 
+  }catch{
+    null;
+  }
+  
 });
 
 
@@ -817,7 +840,7 @@ $('#changeDiscountsModal').on('show.bs.modal', function (event) {
 
     $("#cuponName").on("input", function() {
         var inputValue = $(this).val();
-        
+        $('#proceedbutton5').prop('disabled', false);
         if (inputValue.length > 8) {
             $(this).val(inputValue.slice(0, 8)); // Truncate to 4 digits
         }
@@ -937,7 +960,10 @@ $("#changeTollModal").on("shown.bs.modal", function () {
     });
 });
     
-
+$("#changeDiscountsModal").on("hidden.bs.modal", function () {
+   reset_modal3();
+});
+    
 
 </script>
 

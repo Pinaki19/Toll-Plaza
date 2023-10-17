@@ -12,6 +12,7 @@ import pymongo
 import requests
 import pyrebase
 
+
 firebase_config = {
     'apiKey': "AIzaSyAAJ4Cv2d6cSSbRmnWQPll4kG4TvjdF-W8",
     'authDomain': "smooth-sailing-ad0d5.firebaseapp.com",
@@ -32,13 +33,13 @@ IST = timezone('Asia/Kolkata')
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017"
+app.config["TEMPLATES-AUTO-RELOAD"] = True
 
 database_name = "Users"
 
-# Initialize the PyMongo extension with your Flask app
 mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/{database_name}")
 db = mongo.db
-app.config['SECRET_KEY'] = 'ea5691dc5cddf9f9c4cc457e135e8b44066641c940cc5b6278e20afb2b1b'
+app.config['SECRET_KEY'] = '$wX2RjLzA3bTkH1iGfSg4MnC5QoDpUqV8xYvZ9sE6uF7tIyPwN'
 
 # Use MongoDB for session storage
 app.config["SESSION_TYPE"] = "mongodb"
@@ -48,6 +49,14 @@ app.config["SESSION_MONGODB"] = pymongo.MongoClient(
 
 app.config["SESSION_MONGODB_DB"] = "UserSessions"
 app.config["SESSION_MONGODB_COLLECT"] = "sessions"
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        return super().default(obj)
+app.json_encoder = CustomJSONEncoder
 
 Session(app)
 
@@ -59,6 +68,14 @@ mongo_for_gridfs = PyMongo(
 fs = gridfs.GridFS(mongo_for_gridfs.db)
 
 #----------------------- utility functions ----------------------------------------------------------------------
+
+def Check_User():
+    if 'email' not in session:
+        return False
+    user = db.UserData.find_one({'Email': session.get('email')})
+    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
+        return False
+    return True
 
 def turn_into_num(str):
     s = 0
@@ -135,7 +152,7 @@ def insert_payment_id(email, id):
             '$set': {'transactions': user['transactions']}})
     else:
         return
-
+    
 
 def get_toll_amount(vehicle, journey):
     mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
@@ -205,7 +222,7 @@ def get_admins_from_mongodb():
     projection = {
         "_id": 0,          # Exclude _id field
         "Gender": 0,
-        "Mobile": 0, "Defualt_Profile": 0, "Profile_Url": 0,
+        "Mobile": 0, "Defualt_Profile": 0, "Profile_Url": 0,'Queries':0,
         "RegistrationDate": 0, "Address": 0, "image_id": 0, "transactions": 0,
     }
 
@@ -446,7 +463,7 @@ def login():
             session['email']=email
             return jsonify({'code': 200, 'message': 'Login Success'}), 200
         else:
-            print("Email is not verified. Requesting a new ID token...")
+            #print("Email is not verified. Requesting a new ID token...")
             #new_id_token = user['idToken']
             return jsonify({'code': 405, 'message':'User Email not verified!'}), 405
 
@@ -489,7 +506,7 @@ def sign_up():
        error_object = error_message[start_idx:]
        error = json.loads(error_object)
        error = error['error']
-       print(error)
+       #print(error)
        error_message = ' '.join(error.get('message', 'Undefined').split('_'))
        return jsonify({'code': error.get('code', '400'), 'message': error_message}),  error.get('code', 400)
 
@@ -514,7 +531,7 @@ def reset_password():
        error_object = error_message[start_idx:]
        error = json.loads(error_object)
        error = error['error']
-       print(error)
+       #print(error)
        error_message = ' '.join(error.get('message', 'Undefined').split('_'))
        return jsonify({'code': error.get('code', '400'), 'message': error_message}),  error.get('code', 400)
 
@@ -528,6 +545,7 @@ def Logout():
 
 @app.route('/profile', methods=['GET'])
 def profile():
+    #print(session)
     if 'email' in session:
         # Retrieve the user's email from the session
         email = session.get('email')
@@ -537,6 +555,8 @@ def profile():
         if not user or not wallet:
             session.pop('email','')
             abort(404)
+        if user['Suspended']:
+            return jsonify({'code': 401, 'message': 'User Account is Suspended. Contact Us for more Info.'}), 401
         if user:
             # Render the profile template with user data
             return render_template('Account.html', user=user,wallet=wallet)
@@ -550,22 +570,24 @@ def profile():
 
 @app.route('/Check_login', methods=['GET'])
 def check_login():
+    projection = {
+        "_id": 0,          # Exclude _id field
+        "Gender": 0,
+        "Mobile": 0, "Defualt_Profile": 0, "Profile_Url": 0,"Queries":0,'Email':0,
+        "RegistrationDate": 0, "Address": 0, "image_id": 0, "transactions": 0,
+    }
     if 'email' in session:
-        return "ok",200
+        user = db.UserData.find_one({"Email": session.get('email')},projection)
+        if user['Suspended']:
+            session.pop('email')
+            return jsonify({'code': 401, 'message': 'User Account is Suspended. Contact Us for more Info.'}), 401
+        else:
+            return jsonify({'message': session.get('email'),"User":user}), 200
     else:
-        abort(404)
+        return jsonify({'message': "Not Found!"}), 404
 
 @app.route('/get_toll_rate')
 def get_rate():
-    if 'email' not in session:
-        abort(401)
-
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
-    db = mongo.db
-    user = db.UserData.find_one({'Email': session.get('email')})
-    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
-        return jsonify({"message": "Unauthorized Access!!"}), 401
-
     mongo2= PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
     db=mongo2.db
     object_id = ObjectId("6510916ca24f1f9870537d5f")
@@ -573,13 +595,7 @@ def get_rate():
 
 @app.get('/verify_user')
 def verify():
-    if 'email' not in session:
-        abort(401)
-
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
-    db = mongo.db
-    user = db.UserData.find_one({'Email': session.get('email')})
-    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
+    if not Check_User():
         return jsonify({"message": "Unauthorized Access!!"}), 401
     return 'ok',200
 
@@ -905,7 +921,6 @@ def get_users():
     if 'email' not in session:
         abort(401)
     user=db.UserData.find_one({'Email':session.get('email')})
-   
     if not user['IsSuperAdmin']:
         return jsonify({'message':'Unauthorized Access!!'}),401
     users = list(get_users_from_mongodb())
@@ -917,7 +932,6 @@ def get_admins():
     if 'email' not in session:
         abort(401)
     user = db.UserData.find_one({'Email': session.get('email')})
-
     if not user['IsSuperAdmin']:
         return jsonify({'message': 'Unauthorized Access!!'}), 401
     users = list(get_admins_from_mongodb())
@@ -931,10 +945,8 @@ def make_admins():
     if 'email' not in session:
         abort(401)
     user = db.UserData.find_one({'Email': session.get('email')})
-
     if not user['IsSuperAdmin']:
         abort(401)
-    
     data = request.get_json()
     if not data or 'data' not in data or 'Password' not in data:
         return jsonify({"error": "Invalid JSON data"}), 400
@@ -978,7 +990,6 @@ def delete_admin():
     # Check if the user is authenticated
     if 'email' not in session:
         abort(401)
-
     # Check if the user is a super admin
     user = db.UserData.find_one({'Email': session.get('email')})
     if not user or not user['IsSuperAdmin']:
@@ -1016,16 +1027,8 @@ def delete_admin():
 
 @app.route('/update_toll_rate', methods=['POST'])
 def update_toll_rate():
-    # Check if the user is authenticated
-    if 'email' not in session:
-        abort(401)
-
-    # Check if the user is a super admin
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
-    db = mongo.db
-    user = db.UserData.find_one({'Email': session.get('email')})
-    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
-        return jsonify({"message": "Unauthorized Access!!"}),401
+    if not Check_User():
+        return jsonify({"message": "Unauthorized Access!!"}), 401
     try:
         # Get the JSON data from the request
         data = request.json
@@ -1074,15 +1077,8 @@ def update_toll_rate():
 @app.post("/modify_discounts")
 def modify_discounts():
     data=request.get_json()
-    if 'email' not in session:
-        abort(401)
-
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
-    db = mongo.db
-    user = db.UserData.find_one({'Email': session.get('email')})
-    if not user or not user['IsAdmin'] and not user['IsSuperAdmin']:
+    if not Check_User():
         return jsonify({"message": "Unauthorized Access!!"}), 401
-
     try:
         # Get the JSON data from the request
         data = request.json
@@ -1100,7 +1096,7 @@ def modify_discounts():
             app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
         db = mongo3.db
         GlobalDiscount=data.get('Global')
-        Newcupon=data.get('NewCupon')
+        Newcupon=data.get('NewCupon').lower()
         Newrate = data.get('NewRate')
         Tollrate=data.get('TollRate')
         
@@ -1130,10 +1126,143 @@ def modify_discounts():
         return jsonify({"message": "Internal Server Error"}), 500
 
 
+
+@app.route('/make_query', methods=['POST'])
+def make_query():
+    data = request.get_json()
+    email = data.get('email', '').lower()
+    if 'email' in session and email!=session.get('email'):
+        return jsonify({'message': 'Email Ids do not match! '}),400
+    mongo = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Queries")
+    db = mongo.db
+    collection = db['User_Queries']
+    data['Pending']=True
+    data['Resolved']=False
+    # Insert the data into the MongoDB collection
+    result = collection.insert_one(data)
+    inserted_id = str(result.inserted_id)  # Convert the ObjectId to a string
+    mongo = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Users")
+    db = mongo.db
+    print(data)
+    user = db.UserData.find_one({'Email': email})
+    if user:
+        if 'Queries' not in user:
+                # Create 'transactions' field as a list with the first ID
+            user['Queries'] = [inserted_id]
+        else:
+            user['Queries'].append(inserted_id)
+            # Update the user document in the database
+        db.UserData.update_one({'Email': email}, {
+            '$set': {'Queries': user['Queries']}})
+        
+    return jsonify({'message': f'Query submitted successfully. Reference Id: {inserted_id}'}),200
+
+
+@app.route('/get_queries', methods=['GET'])
+def get_queries():
+    if not Check_User():
+        return jsonify({"message": "Unauthorized Access!!"}), 401
+    mongo = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Queries")
+    collection = mongo.db.User_Queries
+    queries = list(collection.find({'Pending': True}))
+    serialized_queries = []
+    for query in queries:
+        query['_id'] = str(query['_id'])  # Convert ObjectId to string
+        serialized_queries.append(query)
+    return jsonify({'queries': serialized_queries[::-1]})
+
+
+@app.route('/resolve_queries', methods=['POST'])
+def resolve_query():
+    if not Check_User():
+        return jsonify({"message": "Unauthorized Access!!"}), 401
+    mongo = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Queries")
+    db = mongo.db
+    collection = db['User_Queries']
+    try:
+        data = request.get_json()
+        query_id = data.get('queryId')
+        input_text = data.get('inputText')
+
+        # Update the query in the MongoDB collection
+        query = collection.find_one({"_id": ObjectId(query_id)})
+        if query:
+            # Mark the query as resolved
+            collection.update_one({"_id": ObjectId(query_id)}, {
+                                  "$set": {"Pending": False, "Resolved": True, "Response": input_text}})
+            return jsonify({'message': 'Query resolved successfully!'})
+
+        return jsonify({'error': 'Query not found'}, 404)
+
+    except Exception as e:
+        return jsonify({'message': 'Error resolving query', 'details': str(e)}), 500
+
+
+@app.route('/get_user_queries', methods=['GET'])
+def get_user_queries():
+    mongo = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Users")
+    collection = mongo.db.UserData
+    # Replace with how you retrieve the session email
+    session_email = session.get('email','')
+    # Find the user by session email
+    mongo2 = PyMongo(
+        app, uri=f"{app.config['MONGO_URI']}/Queries")
+    queries_collection = mongo2.db.User_Queries
+    user = collection.find_one({"Email": session_email})
+    if user:
+        User_Queries = user.get('Queries', [])[::-1]
+        visited=True
+        if len(User_Queries)==0:
+            visited=True
+        user_queries = []
+        flag=True
+        for query_id in User_Queries:
+            query = queries_collection.find_one({"_id": ObjectId(query_id)})
+            if visited and query['Resolved'] and 'visited' not in query:
+                visited=False
+            if query and query.get('Resolved'):
+                user_queries.append({
+                    "Message": query.get('message'),
+                    "Response": query.get('Response')
+                })
+        
+        return jsonify({'queries':user_queries,'visited':visited})
+
+    return jsonify({'queries': [], 'visited':True}), 404
+
+
+@app.get('/mark_visited')
+def mark_visited():
+   mongo = PyMongo(
+       app, uri=f"{app.config['MONGO_URI']}/Users")
+   collection = mongo.db.UserData
+   session_email = session.get('email', '')
+
+   mongo2 = PyMongo(
+       app, uri=f"{app.config['MONGO_URI']}/Queries")
+   queries_collection = mongo2.db.User_Queries
+   user = collection.find_one({"Email": session_email})
+   if user:
+        Queries = user.get('Queries', [])[::-1]
+        for last_query in Queries:
+            query=queries_collection.find_one({"_id": ObjectId(last_query)})
+            if query['Resolved'] and 'visited' not in query:
+                queries_collection.update_one({"_id": ObjectId(last_query)}, {
+                                              '$set': {'visited': True}})
+   return jsonify({"message": "success"}),200
+   
+
+
 @app.route('/', methods=['GET'])
 def index():
   return render_template('Home.html')
     
 
 if __name__ == "__main__":
+    
     app.run(port=8080,debug=True)

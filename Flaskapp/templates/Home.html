@@ -93,10 +93,10 @@
          </div>
 
             <!-- Call to Action-->
-            <div class="card text-white bg-secondary my-5 py-4 text-center d-flex flex-column" style="justify-content:center;align-items:center;">
+            <div class="card text-white bg-secondary my-5 py-3 text-center d-flex flex-column" style="justify-content:center;align-items:center;">
                  <h3>Current Toll Rate</h3>
-                 <p id='Discounts' style="font-family:arial;"> </p>
-                <table border="1">
+                
+                <table border="1" >
                     <thead>
                         <tr>
                             <th style="color:black">Vehicle Type</th>
@@ -109,6 +109,7 @@
                         <!-- Table rows will be added here dynamically -->
                     </tbody>
                 </table>
+                 <p id='Discounts' style="font-family:arial;margin:0;padding-top:10px;padding-bottom:0;"> </p>
                 <p style="padding-top:10px;font-size:18px;font-family:times-new;" id="ShowCupons"> </p>
             </div>
             <!-- Content Row-->
@@ -160,7 +161,7 @@
         </div>
         <!-- Footer-->
         <footer class="py-5 bg-dark">
-            <div class="container px-4 px-lg-5"><p class="m-0 text-center text-white">Copyright &copy; Smooth Sailing 2023-2024</p></div>
+            <div class="container px-4 px-lg-5"><p class="m-0 text-center text-white">Smooth Sailing 2023-2024 &copy; PINAKI BANERJEE</p></div>
         </footer>
 
         
@@ -175,7 +176,7 @@
                     <p>Please fill in this form to create an account!</p>
                     <hr>
                     <div class="form-group">
-                        <div class="input-group">
+                        <div class="input-group" style="height:95%;">
                             <span class="input-group-addon"><i class="fa fa-user"></i></span>
                             <input type="text" class="form-control" id="username" name="username" placeholder="Fullname" required="required">
                         </div>
@@ -195,7 +196,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="bi bi-gender-ambiguous"></i></span>
-                            <select class="form-control" id="gender" name="gender" required="required">
+                            <select class="form-control" id="gender" name="gender" required="required" style="height:105% !important;">
                                 <option value="" disabled selected class="text-muted">Select Gender</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -206,7 +207,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required="required" oninput="check_pass()">
+                            <input  type="password" class="form-control" id="password" name="password" placeholder="Password" required="required" oninput="check_pass()">
                             <i class="bi bi-eye-slash-fill" id="eye1" onclick="show_hide1()"></i>
                         </div>
                     </div>
@@ -216,7 +217,7 @@
                                 <i class="fa fa-lock"></i>
                                 <i class="fa fa-check"></i>
                             </span>
-                            <input type="text" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required="required" oninput="check_pass()">
+                            <input  type="text" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required="required" oninput="check_pass()">
                             <i id="Right_wrong"></i>
                         </div>
                     </div>
@@ -297,10 +298,12 @@
             <div class="modal-body">
                 <form id="Payment_form" onsubmit="Process_Toll_pay()">
                     <div class="form-group" style="padding-bottom:7px;">
-                        <label for="vehicleType">Vehicle Type</label>
+                        <label for="vehicleType" style="padding-bottom:5px;">Vehicle Type</label>
                         <select class="form-control" id="vehicleType" required>
                             <option value="" disabled selected>Select Vehicle Type</option>
-                            <option value="car">Car / Jeep / Van</option>
+                            <option value="car">Car</option>
+                            <option value="jeep">Jeep</option>
+                            <option value="van">Van</option>
                             <option value="truck">Truck</option>
                             <option value="lcv">Light Commercial Vehicles</option>
                             <option value="bus">Bus</option>
@@ -311,7 +314,7 @@
                     </div>
                     
                     <div class="form-group" style="padding-bottom:7px;">
-                        <label for="JourneyType">Journey Type</label>
+                        <label for="JourneyType" style="padding-bottom:5px;">Journey Type</label>
                         <select class="form-control" id="JourneyType" required>
                             <option value="" disabled selected class="text-muted">Select Load Type</option>
                             <option value="Single">Single</option>
@@ -319,7 +322,7 @@
                         </select>
                     </div>
                     <div class="form-group " style="padding-bottom:7px;">
-                        <label for="registrationNumber">Registration Number</label>
+                        <label for="registrationNumber" style="padding-bottom:5px;">Registration Number</label>
                         <input type="text" class="form-control" id="registrationNumber" required>
                     </div>
                     <div class="form-group" style="padding-bottom:7px;">
@@ -727,17 +730,7 @@ async function register(username, password, email, mobile, gender) {
     }
 
 
-    function ValidateEmail(input) {
-            var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-            if (input.match(validRegex)) {
-                return true;
-            } 
-            else {
-                return false;
-            }
-
-    }
+    
 
     function show_hide2(){
         var element=document.getElementById("login_password");

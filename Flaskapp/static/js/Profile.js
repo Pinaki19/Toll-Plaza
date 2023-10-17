@@ -92,19 +92,13 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function fillModalBodyDummy(text) {
-    const listGroup = document.querySelector('.list-group');
-    const listItem = document.createElement('li');
-    listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-
-    // Create a div to hold the transaction details
+   
     const transactionDiv = document.createElement('div');
-    transactionDiv.textContent =text;
-    listItem.appendChild(transactionDiv);
-    listGroup.appendChild(listItem);
+    transactionDiv.innerHTML = `<div class="alert alert-info" role="alert" style="font-weight:500;text-align:center;">
+        ${text}
+    </div>`;
     const modalBody = document.getElementById("RecentModalbody");
-    const transactionType = document.createElement('p');
-    transactionType.textContent = text;
-    modalBody.appendChild(transactionType);
+    modalBody.appendChild(transactionDiv);
 }
 
     // Function to fill the modal body with transaction details
@@ -384,31 +378,45 @@ function deladmin() {
 }
 
 function reset_modal(){
-    document.getElementById('proceedbutton3').style.display = 'inline-block'; 
-    document.getElementById('confirmbutton').style.display = 'none';
-    document.getElementById('EnterPasscode').style.display = "none";
-    document.getElementById("warning").innerHTML='';
-}
+    try{
+        document.getElementById('proceedbutton3').style.display = 'inline-block';
+        document.getElementById('confirmbutton').style.display = 'none';
+        document.getElementById('EnterPasscode').style.display = "none";
+        document.getElementById("warning").innerHTML = '';
+    }catch{null;}
+    }
+    
 
 
 function reset_modal2() {
-    document.getElementById('proceedbutton2').style.display = 'inline-block';
-    document.getElementById('confirmbutton2').style.display = 'none';
-    document.getElementById('EnterPasscode2').style.display = "none";
-    document.getElementById("warning2").innerHTML = '';
+    try{
+        document.getElementById('proceedbutton2').style.display = 'inline-block';
+        document.getElementById('confirmbutton2').style.display = 'none';
+        document.getElementById('EnterPasscode2').style.display = "none";
+        document.getElementById("warning2").innerHTML = '';
+    }catch{
+        null;
+    }
+    
 }
 
 
 function reset_modal3() {
-    document.getElementById('proceedbutton5').style.display = 'inline-block';
-    document.getElementById('confirmbutton5').style.display = 'none';
-    document.getElementById('EnterPasscode5').style.display = "none";
-    document.getElementById("warnDiscountchange").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
+    try {
+        $('#proceedbutton5').prop('disabled', true);
+        $('#ADDnew').prop('disabled',false);
+        document.getElementById('proceedbutton5').style.display = 'inline-block';
+        document.getElementById('confirmbutton5').style.display = 'none';
+        document.getElementById('EnterPasscode5').style.display = "none";
+        document.getElementById("warnDiscountchange").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
                The Discount rates will be changed on confirmation.
     </div > `;
-    document.getElementById('NewCoupon').style.display = 'none';
-    $('#proceedbutton5').prop('disabled', true);
-    document.getElementById('EnterNewRate').style.display = 'none';
+        document.getElementById('NewCoupon').style.display = 'none';
+        document.getElementById('EnterNewRate').style.display = 'none';
+}catch{
+    null;
+}
+    
 }
 
 
@@ -499,7 +507,7 @@ function modify_users() {
             warningElement.innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
                 ${error.responseJSON.message}
             </div>`;
-            // Optionally, you can display an error message or take corrective actions.
+            
         }
     });
 }
@@ -821,9 +829,10 @@ function change_Discounts(){
 }
 
 function changeCupon(){
+    document.getElementById('EnterPasscode5').style.display = "block";
     document.getElementById('proceedbutton5').style.display = 'none';
     document.getElementById('confirmbutton5').style.display = 'inline-block';
-    document.getElementById('EnterPasscode5').style.display = "block";
+    
     document.getElementById("warnDiscountchange").innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
         You are about to change Discount rates!! <br> Provide passcode below to confirm.
     </div>`;
@@ -837,8 +846,11 @@ function change_cupon_rate(){
 }
 
 function add_new_cupon(){
-    document.getElementById('NewCoupon').style.display='block';
-    $('#proceedbutton5').prop('disabled', false);
+    try{
+        document.getElementById('NewCoupon').style.display = 'block';
+        $('#ADDnew').prop('disabled', true);
+    }catch{null;}
+   
 }
 
 function change_global(){
@@ -889,7 +901,7 @@ function change_discount_rate(){
                 ${data.message}</div>`;
             setTimeout(function () { location.reload() }, 1700);
         },
-        error: function (xhr,status,error) {
+        error: function (error) {
             // Handle any errors that occur during the AJAX request
             warningElement.innerHTML = `<div class="alert alert-danger" role="alert" style="color:black;font-weight:500;text-align:center;">
                 ${error.responseJSON.message}
