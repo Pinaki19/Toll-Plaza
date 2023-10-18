@@ -9,7 +9,7 @@ from bson import ObjectId
 import json
 import io
 import pymongo
-import requests
+
 import pyrebase
 
 
@@ -1238,6 +1238,7 @@ def get_user_queries():
         return jsonify({'queries':user_queries,'visited':visited})
 
     return jsonify({'queries': [], 'visited':True}), 404
+
 
 
 @app.get('/mark_visited')

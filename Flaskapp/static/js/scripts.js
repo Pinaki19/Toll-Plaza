@@ -297,11 +297,12 @@ function Go_profile() {
   location.href="/profile";
 }
 function Logout(){
-  var btn=document.getElementById('Logout');
+  var btn = document.getElementById('Login');
   if(btn){
-   confirm_logout();
-  }else{
     Go_Login();
+   
+  }else{
+    confirm_logout();
   }
 }
 
