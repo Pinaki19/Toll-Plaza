@@ -195,3 +195,61 @@
     width: 100%;
     /* You can adjust this as needed */
 }
+
+
+#scroll-container{
+border: 2px solid black;
+border-radius: 5px;
+overflow: hidden;
+min-width:500px;
+width:600px;
+}
+
+#ShowCupons {
+    text-align: right;
+
+    /* animation properties */
+    -moz-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+
+    -moz-animation: my-animation 12s linear infinite;
+    -webkit-animation: my-animation 12s linear infinite;
+    animation: my-animation 12s linear infinite;
+}
+
+/* for Firefox */
+@-moz-keyframes my-animation {
+    from {
+        -moz-transform: translateX(-100%);
+    }
+
+    to {
+        -moz-transform: translateX(100%);
+    }
+}
+
+/* for Chrome */
+@-webkit-keyframes my-animation {
+    from {
+        -webkit-transform: translateX(-100%);
+    }
+
+    to {
+        -webkit-transform: translateX(100%);
+    }
+}
+
+@keyframes my-animation {
+    from {
+        -moz-transform: translateX(-100%);
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+    }
+
+    to {
+        -moz-transform: translateX(100%);
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+    }
+}

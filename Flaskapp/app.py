@@ -865,6 +865,7 @@ def update_wallet():
 
 @app.get('/get_cupons')
 def get_cupon_names():
+   
     mongo3 = PyMongo(
         app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
     db = mongo3.db
@@ -1077,6 +1078,10 @@ def update_toll_rate():
 @app.post("/modify_discounts")
 def modify_discounts():
     data=request.get_json()
+    mongo = PyMongo(
+            app, uri=f"{app.config['MONGO_URI']}/Users")
+    db = mongo.db
+    user = db.UserData.find_one({'Email': session.get('email')})
     if not Check_User():
         return jsonify({"message": "Unauthorized Access!!"}), 401
     try:
@@ -1217,10 +1222,7 @@ def get_user_queries():
     if user:
         User_Queries = user.get('Queries', [])[::-1]
         visited=True
-        if len(User_Queries)==0:
-            visited=True
         user_queries = []
-        flag=True
         for query_id in User_Queries:
             query = queries_collection.find_one({"_id": ObjectId(query_id)})
             if visited and query['Resolved'] and 'visited' not in query:
@@ -1251,12 +1253,13 @@ def mark_visited():
         Queries = user.get('Queries', [])[::-1]
         for last_query in Queries:
             query=queries_collection.find_one({"_id": ObjectId(last_query)})
-            if query['Resolved'] and 'visited' not in query:
-                queries_collection.update_one({"_id": ObjectId(last_query)}, {
-                                              '$set': {'visited': True}})
+            if query['Resolved'] :
+                if 'visited' not in query:
+                    queries_collection.update_one({"_id": ObjectId(last_query)}, {'$set': {'visited': True}})
+                else:
+                    break
    return jsonify({"message": "success"}),200
    
-
 
 @app.route('/', methods=['GET'])
 def index():

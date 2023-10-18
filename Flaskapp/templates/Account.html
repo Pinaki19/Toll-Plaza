@@ -795,159 +795,164 @@ $('#changeDiscountsModal').on('show.bs.modal', function (event) {
 });
 
 
-    $("#passcode").on("input", function() {
-        var inputValue = $(this).val();
-        if(isNaN(parseInt(inputValue))){
-          $(this).val('');
-          return;
-        }
-        if (inputValue.length > 4) {
-            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
-        }
-    });
-    
-    $("#passcode2").on("input", function() {
-       var inputValue = $(this).val();
-        if(isNaN(parseInt(inputValue))){
-          $(this).val('');
-          return;
-        }
-        if (inputValue.length > 4) {
-            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
-        }
-    });
-    $("#passcode4").on("input", function() {
-        var inputValue = $(this).val();
-        if(isNaN(parseInt(inputValue))){
-          $(this).val('');
-          return;
-        }
-        if (inputValue.length > 4) {
-            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
-        }
-    });
-
-    $("#passcode5").on("input", function() {
-        var inputValue = $(this).val();
-        if(isNaN(parseInt(inputValue))){
-          $(this).val('');
-          return;
-        }
-        if (inputValue.length > 4) {
-            $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
-        }
-    });
-
-    $("#cuponName").on("input", function() {
-        var inputValue = $(this).val();
-        $('#proceedbutton5').prop('disabled', false);
-        if (inputValue.length > 8) {
-            $(this).val(inputValue.slice(0, 8)); // Truncate to 4 digits
-        }
-    });
-    
-    $("#cuponRate").on("input", function() {
-        $('#proceedbutton5').prop('disabled', false);
-        var inputValue = $(this).val();
-        if (inputValue.length > 2) {
-            $(this).val(inputValue.slice(0, 2)); 
-        }
-        try{
-          var val=parseInt($(this).val());
-          if (val<=0 ||isNaN(val)) {
-              $(this).val(''); 
-          }
-        }
-         catch{
-            $(this).val(''); 
-         }
-    });
-
-
-    $("#GlobalRate").on("input", function() {
-        $('#proceedbutton5').prop('disabled', false);
-        var inputValue = $(this).val();
-        if (inputValue.length > 3) {
-            $(this).val(inputValue.slice(0, 3)); 
-        }
-        try{
-          var val=parseInt($(this).val());
-          if (val<0 ||isNaN(val)) {
-              $(this).val(''); 
-          }
-          else if(val>100){
-            $(this).val(100); 
-          }
-        }
-         catch{
-            $(this).val(''); 
-         }
-    });
-    
-
-    $(document).on('change', '#CreateAdmin input[type="checkbox"]', function() {
-        // Check if at least one checkbox is checked
-        if ($('#CreateAdmin input[type="checkbox"]:checked').length > 0) {
-            $('#proceedbutton3').prop('disabled', false);
-        } else {
-            $('#proceedbutton3').prop('disabled', true);
-        }
-    });
-
-    $(document).on('change', '#DeleteAdmin input[type="checkbox"]', function() {
-        // Check if at least one checkbox is checked
-        if ($('#DeleteAdmin input[type="checkbox"]:checked').length > 0) {
-            $('#proceedbutton2').prop('disabled', false);
-        } else {
-            $('#proceedbutton2').prop('disabled', true);
-        }
-    });
-
-    $(document).on('change', '#CreateAdmin .suspend-checkbox', function() {
-    // Get the associated email span
-    var emailSpan = $(this).closest('li').find('span#Emailid');
-
-    if ($(this).is(':checked')) {
-        // Checkbox is checked, change email text color to red
-        emailSpan.css('color', 'red');
-    } else {
-        // Checkbox is unchecked, change email text color to blue
-        emailSpan.css('color', 'blue');
+$("#passcode").on("input", function() {
+    var inputValue = $(this).val();
+    if(isNaN(parseInt(inputValue))){
+      $(this).val('');
+      return;
     }
-
-  });
-
-  $(document).on('change', '#CreateAdmin .activate-checkbox', function() {
-    // Get the associated email span
-    var emailSpan = $(this).closest('li').find('span#Emailid');
-
-    if ($(this).is(':checked')) {
-        // Checkbox is checked, change email text color to red
-        emailSpan.css('color', 'blue');
-    } else {
-        // Checkbox is unchecked, change email text color to blue
-        emailSpan.css('color', '#f5ad42');
+    if (inputValue.length > 4) {
+        $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
     }
+});
 
-  });
+$("#passcode2").on("input", function() {
+    var inputValue = $(this).val();
+    if(isNaN(parseInt(inputValue))){
+      $(this).val('');
+      return;
+    }
+    if (inputValue.length > 4) {
+        $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
+    }
+});
+$("#passcode4").on("input", function() {
+    var inputValue = $(this).val();
+    if(isNaN(parseInt(inputValue))){
+      $(this).val('');
+      return;
+    }
+    if (inputValue.length > 4) {
+        $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
+    }
+});
+
+$("#passcode5").on("input", function() {
+    var inputValue = $(this).val();
+    if(isNaN(parseInt(inputValue))){
+      $(this).val('');
+      return;
+    }
+    if (inputValue.length > 4) {
+        $(this).val(inputValue.slice(0, 4)); // Truncate to 4 digits
+    }
+});
+
+$("#cuponName").on("input", function() {
+    var inputValue = $(this).val();
+    $('#proceedbutton5').prop('disabled', false);
+    if (inputValue.length > 8) {
+        $(this).val(inputValue.slice(0, 8)); // Truncate to 4 digits
+    }
+});
+
+$("#cuponRate").on("input", function() {
+    $('#proceedbutton5').prop('disabled', false);
+    var inputValue = $(this).val();
+    if (inputValue.length > 2) {
+        $(this).val(inputValue.slice(0, 2)); 
+    }
+    try{
+      var val=parseInt($(this).val());
+      if (val<=0 ||isNaN(val)) {
+          $(this).val(''); 
+      }
+    }
+      catch{
+        $(this).val(''); 
+      }
+});
+
+
+$("#GlobalRate").on("input", function() {
+    $('#proceedbutton5').prop('disabled', false);
+    var inputValue = $(this).val();
+    if (inputValue.length > 3) {
+        $(this).val(inputValue.slice(0, 3)); 
+    }
+    try{
+      var val=parseInt($(this).val());
+      if (val<0 ||isNaN(val)) {
+          $(this).val(''); 
+      }
+      else if(val>100){
+        $(this).val(100); 
+      }
+    }
+      catch{
+        $(this).val(''); 
+      }
+});
+    
+
+$(document).on('change', '#CreateAdmin input[type="checkbox"]', function() {
+    // Check if at least one checkbox is checked
+    if ($('#CreateAdmin input[type="checkbox"]:checked').length > 0) {
+        $('#proceedbutton3').prop('disabled', false);
+    } else {
+        $('#proceedbutton3').prop('disabled', true);
+    }
+});
+
+$(document).on('change', '#DeleteAdmin input[type="checkbox"]', function() {
+    // Check if at least one checkbox is checked
+    if ($('#DeleteAdmin input[type="checkbox"]:checked').length > 0) {
+        $('#proceedbutton2').prop('disabled', false);
+    } else {
+        $('#proceedbutton2').prop('disabled', true);
+    }
+});
+
+$(document).on('change', '#CreateAdmin .suspend-checkbox', function() {
+// Get the associated email span
+var emailSpan = $(this).closest('li').find('span#Emailid');
+
+if ($(this).is(':checked')) {
+    // Checkbox is checked, change email text color to red
+    emailSpan.css('color', 'red');
+} else {
+    // Checkbox is unchecked, change email text color to blue
+    emailSpan.css('color', 'blue');
+}
+
+});
+
+$(document).on('change', '#CreateAdmin .activate-checkbox', function() {
+// Get the associated email span
+var emailSpan = $(this).closest('li').find('span#Emailid');
+
+if ($(this).is(':checked')) {
+    // Checkbox is checked, change email text color to red
+    emailSpan.css('color', 'blue');
+} else {
+    // Checkbox is unchecked, change email text color to blue
+    emailSpan.css('color', '#f5ad42');
+}
+
+});
 
 
 
 // When the modal is shown, make an AJAX request to get the data
 $("#changeTollModal").on("shown.bs.modal", function () {
     const tableBody = document.getElementById("TollTableBody");
-    
     $.ajax({
-        url: "/get_toll_rate",
-        type: "GET",
-        dataType: "json",
-        success: function (data) {
-            if(tableBody.dataSet==true){
-                return;
-            }else{
-                tableBody.dataSet= true;
+      url: '/verify_user',
+      method: 'GET',
+      success: function (data) {
+        $.ajax({
+            url: "/get_toll_rate",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if(tableBody.dataSet==true){
+                    return;
+                }else{
+                    tableBody.dataSet= true;
+                }
+                populateTable(data);
             }
-            populateTable(data);
+          });
         },
         error: function (error) {
           $('#proceedbutton4').prop('disabled', true);

@@ -36,9 +36,6 @@ var dict = {
   messages: expandMessagesDropdown,
   notifications: expandMessagesDropdown,
   query: expandMessagesDropdown,
-  ask: expandMessagesDropdown,
-  askaquery: expandMessagesDropdown,
-  'ask a query': expandMessagesDropdown,
   home:Go_home,
   profile:Go_profile,
   login:Go_Login,
@@ -47,28 +44,76 @@ var dict = {
   
 };
 
-function search(){
-  var searched = document.getElementById('Search_bar').value;
-  
-  if(searched.length>0){
-    event.preventDefault();
-    if (searched.length<=15 && dict.hasOwnProperty(searched.toLowerCase())){
-      dict[searched.toLowerCase()]();
-    }else{
-      findString(searched);
-      
+function suggest() {
+  var searched = $('#Search_bar').val().trim();
+  var matchingKeys = [];
+  // Find keys in 'dict' that start with the input text
+  for (var key in dict) {
+    if (key.startsWith(searched.toLowerCase())) {
+      matchingKeys.push(key);
     }
-    setTimeout(function () {
-      document.getElementById('Search_bar').value = '';
-      document.head.click();
-    }, 5000);
-    
+  }
+
+  var suggestionsContainer = $('#suggestions');
+  suggestionsContainer.empty();
+  if (matchingKeys.length > 0) {
+    // Display the suggestions based on matching keys
+    showSuggestions(matchingKeys);
+  } 
+  
+}
+
+function showSuggestions(suggestions) {
+  var suggestionsContainer = $('#suggestions');
+  suggestionsContainer.empty();
+
+  suggestions.forEach(function (suggestion) {
+    var capitalizedSuggestion = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
+    var suggestionElement = $('<div>')
+      .addClass('suggestion')
+      .text(capitalizedSuggestion);
+    suggestionsContainer.append(suggestionElement);
+  });
+
+  // Attach a click event handler to the suggestions container for delegation
+  suggestionsContainer.on('click', '.suggestion', function () {
+    var suggestion = $(this).text();
+    $('#Search_bar').val(suggestion.toLowerCase());
+    search(suggestion); // Trigger search when a suggestion is clicked
+  });
+
+  // Position the suggestions div below the search bar
+  var inputOffset = $('#Search_bar').offset();
+  suggestionsContainer.css({
+    top: inputOffset.top + $('#Search_bar').outerHeight(),
+    left: inputOffset.left,
+    width: $('#Search_bar').outerWidth(),
+  });
+  suggestionsContainer.show();
+  
+}
+
+function clearSuggestions() {
+  $('#suggestions').hide();
+  $('#Search_bar').val('');
+}
+
+function search(text) {
+  event.preventDefault();
+  var searched = text;
+  //clearSuggestions();
+  if (searched.length > 0) {
+    if (searched.length <= 15 && dict.hasOwnProperty(searched.toLowerCase())) {
+      dict[searched.toLowerCase()]();
+    } else {
+      findString(searched);
+    }
   }
 }
 
+
 function findString(str) {
   var found = false;
-
   if (window.find) {
     // Modern browsers that support window.find
     found = window.find(str);
@@ -100,31 +145,28 @@ function findString(str) {
       found = true;
     }
 
-    // Clean up temporary elements
     body.normalize();
     span.parentNode.replaceChild(textNode, span);
   }
 
   if (!found) {
     // Handle not found
-    if (str.length > 10) {
-      showPopup(str.substring(0,5) + '...');
+    if (str.length > 8) {
+      showPopup(str.substring(0,4) + '...');
     } else {
       showPopup(str);
     }
-    document.getElementById('Search_bar').value = '';
+    $('#Search_bar').val('');
   }
 }
 
 
-// Function to expand the "Messages" dropdown
 function expandMessagesDropdown() {
-  const messagesToggle = document.getElementById('MessagesToggle');
-  if (messagesToggle) {
-    // Trigger a click event on the "Messages" dropdown toggle button
-    messagesToggle.click();
-  }
+  var messagesToggle = $('#MessagesToggle');
+  var dropdown = new bootstrap.Dropdown(messagesToggle);
+    setTimeout(()=>{dropdown.show()},100);
 }
+
 
 
 function showPopup(data) {
@@ -239,15 +281,6 @@ function showPopup(data) {
   container.style.border = '2px solid black';
 }
 
-function expandMessagesDropdown() {
-setTimeout(function () {
-  const messagesToggle = document.getElementById('MessagesToggle');
-  if (messagesToggle) {
-    // Trigger a click event on the "Messages" dropdown toggle button
-    messagesToggle.click();
-  }
-}, 100); // Delay execution by 100 milliseconds
-}
 
 
 function Go_home(){
@@ -256,53 +289,52 @@ function Go_home(){
 
 
 function Go_Login() {
-  location.href = '/profile';
+  showLoginModal();
 }
 
 function Go_profile() {
-  Go_Login();
+  location.href="/profile";
 }
 function Logout(){
   var btn=document.getElementById('Logout');
   if(btn){
-    btn.click();
+   confirm_logout();
   }else{
     Go_Login();
   }
 }
 
-function getFirebaseErrorMessage (code) {
-  var message = null;
-  console.log(code);
-  switch (code) {
-    case "auth/user-not-found":
-      message = 'USER NOT FOUND';
-      break;
-    case "auth/email-already-in-use":
-      message = 'EMAIL ALREADY IN USE';
-      break;
-    case "auth/internal-error":
-      message = 'INTERNAL ERROR';
-      break;
-    case "auth/invalid-login-credentials":
-      message = 'INVALID LOGIN CREDENTIALS';
-      break;
-    case "auth/invalid-email":
-      message = 'INVALID EMAIL FORMAT';
-      break;
-    case "auth/invalid-password":
-      message = 'INVALID PASSWORD FORMAT';
-      break;
-    case "auth/weak-password":
-      message = 'Password Too Weak! Use Atleast 6 characters';
-      break;
-    default:
-      message = 'Something Went Wrong! Try Again';
-      break;
-  }
-  return message;
-}
-
+// function getFirebaseErrorMessage (code) {
+//   var message = null;
+//   console.log(code);
+//   switch (code) {
+//     case "auth/user-not-found":
+//       message = 'USER NOT FOUND';
+//       break;
+//     case "auth/email-already-in-use":
+//       message = 'EMAIL ALREADY IN USE';
+//       break;
+//     case "auth/internal-error":
+//       message = 'INTERNAL ERROR';
+//       break;
+//     case "auth/invalid-login-credentials":
+//       message = 'INVALID LOGIN CREDENTIALS';
+//       break;
+//     case "auth/invalid-email":
+//       message = 'INVALID EMAIL FORMAT';
+//       break;
+//     case "auth/invalid-password":
+//       message = 'INVALID PASSWORD FORMAT';
+//       break;
+//     case "auth/weak-password":
+//       message = 'Password Too Weak! Use Atleast 6 characters';
+//       break;
+//     default:
+//       message = 'Something Went Wrong! Try Again';
+//       break;
+//   }
+//   return message;
+// }
 
 function validateMobile() {
   var mobileInput = document.getElementById("mobile") || document.getElementById("editMobile");
@@ -327,13 +359,13 @@ function validateMobile() {
 
 
 function get_cupons() {
+  const showCuponsDiv = document.getElementById('ShowCupons');
   fetch('/get_cupons')
     .then(response => response.json())
     .then(data => {
       if (data.data && data.data.length > 0) {
         const cupons = data.data;
-        const showCuponsDiv = document.getElementById('ShowCupons');
-
+        
         // Map the coupon data to formatted strings
         const formattedCupons = cupons.map(cupon => {
           const [name, value] = cupon;
@@ -344,10 +376,12 @@ function get_cupons() {
         showCuponsDiv.textContent = 'Coupons available: ' + formattedCupons.join(' | ');
       } else {
         // Handle the case where there are no coupon names
-        console.log('No coupon names available');
+        showCuponsDiv.textContent ="No coupons available currently..";
+        console.log('No coupons available currently..');
       }
     })
     .catch(error => {
+      document.getElementById('scroll-container').remove();
       console.error('Error:', error);
     });
 }
@@ -413,4 +447,5 @@ function validateForm() {
   // Enable or disable the "Proceed" button based on validation results
   $('#SendMessage').prop('disabled', !(isValidEmail && isMessageValid));
 }
+
 
