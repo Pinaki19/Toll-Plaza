@@ -1209,6 +1209,8 @@ def resolve_query():
 
 @app.route('/get_user_queries', methods=['GET'])
 def get_user_queries():
+    if 'email' not in session:
+        return jsonify({'queries':[], 'visited': True})
     mongo = PyMongo(
         app, uri=f"{app.config['MONGO_URI']}/Users")
     collection = mongo.db.UserData

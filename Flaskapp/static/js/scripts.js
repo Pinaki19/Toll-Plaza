@@ -111,10 +111,11 @@ function search(text) {
   }
 }
 
-
 function findString(str) {
+ 
   var found = false;
   if (window.find) {
+    
     // Modern browsers that support window.find
     found = window.find(str);
   } else {
@@ -150,7 +151,7 @@ function findString(str) {
   }
 
   if (!found) {
-    // Handle not found
+   
     if (str.length > 8) {
       showPopup(str.substring(0,4) + '...');
     } else {

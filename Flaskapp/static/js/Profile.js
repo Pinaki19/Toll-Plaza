@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (data.success && data.transactions.length > 0) {
-                var recentTransactions = data.transactions.slice(0, 5); // Limit to 5 transactions
+                var recentTransactions = data.transactions.slice(0, 10); // Limit to 5 transactions
                 const listGroup = document.querySelector('.list-group');
                 var alltransactions = data.transactions;
                 // Iterate over the recent transactions and create list items
