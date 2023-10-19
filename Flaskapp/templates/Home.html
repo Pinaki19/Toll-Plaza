@@ -48,7 +48,7 @@
 {% block content %}
 
         <!-- Page Content-->
-        <div class="container px-4 px-lg-3" style=" margin-top:30px;">
+        <div class="container px-4 px-lg-3" style=" margin-top:40px;">
             <div class="row">
                 <!-- Left Column for jssor_1 div -->
                 <div class="col-lg-7">
@@ -83,11 +83,11 @@
 
                 <!-- Right Column for "SMOOTH SAILING" div -->
                 <div class="col-lg-5" id='Name'>
-                    <h1 class="font-weight-light">SMOOTH SAILING</h1>
+                    <h2 class="font-weight-light">WELCOME TO SMOOTH SAILING</h2>
                     <p>This website functions as a digital toll collection platform, eleminating
                         the need for manual labour. It empowers users to explore an extensive range of
                         toll services and select the ones that suit their needs.</p>
-                    <a class="btn btn-primary" href="#Main_content">Check out</a>
+                    <a class="btn btn-primary" href="#Main_content" >Check out</a>
                 </div>
             </div>
          </div>
@@ -118,7 +118,7 @@
             </div>
            
             <!-- Content Row-->
-            <div class="row gx-4 gx-lg-5" id="Main_content">
+            <div class="row gx-4 gx-lg-5" id="Main_content" style="padding-bottom:0;">
                 <div class="col-md-4 mb-5">
                     <div class="card h-100">
                         <div class="card-body">
@@ -154,10 +154,7 @@
             </div>
         </div>
         <!-- Footer-->
-        <footer class="py-5 bg-dark">
-            <div class="container px-4 px-lg-5"><p class="m-0 text-center text-white">Smooth Sailing 2023-2024 &copy; PINAKI BANERJEE</p></div>
-        </footer>
-
+       
         
         <!-- Signup Modal -->
 <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel" aria-hidden="true">
@@ -337,7 +334,7 @@
 
 
 {% endblock content %} 
-            
+
 {% block scripts %}
  <script>
 var jsonData;
@@ -846,3 +843,4 @@ async function register(username, password, email, mobile, gender) {
 </script>
 
 {% endblock ModuleLogin %}
+

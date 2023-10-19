@@ -51,7 +51,9 @@
                 <ul class="list-group list-group-flush">
                   
                 </ul>
+               
               </div>
+               <p class="text-muted py-1 px-5">Check all transactions tab for more details</p>
             </div>
             <div class="col-md-8">
               <div class="card mb-3">
@@ -245,10 +247,10 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background:#fafae8;">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="RecentModalLabel">All Recent Transactions</h5>
-                   
+                    <h5 class="modal-title" id="RecentModalLabel">All Transactions</h5>
                 </div>
-                <div class="modal-body" id="RecentModalbody" style="padding:25px;">
+                <p class="text-muted py-1 px-5" style="padding-bottom:0;margin:0;">Contact us with Transaction id, Incase of any issues</p>
+                <div class="modal-body" id="RecentModalbody" style="padding:25px;padding-top:10px;">
                     
                 </div>
                 <div class="modal-footer">
@@ -284,7 +286,7 @@
 </div>
 
 <div class="modal fade" id="deleteAdminModal" tabindex="-1" aria-labelledby="deleteAdminModalLabel" aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered custom-modal-dialog2">
         <div class="modal-content" style="background:#f9fae8;">
           <div class="modal-header">
               <h5 class="modal-title" id="deleteAdminModalLabel">Remove Admin</h5>
@@ -386,6 +388,7 @@
 </div>
 
 {% endblock content %}
+
 
 {% block scripts %}
 
@@ -693,7 +696,7 @@ $('#walletModal').on('show.bs.modal', function (event) {
           $('#RecentTransactions').html(data);
         },
       error: function (error) {
-        console.error('Error fetching recent transactions:', error);
+        console.error('ErronewAdminModar fetching recent transactions:', error);
       }
     });
 });

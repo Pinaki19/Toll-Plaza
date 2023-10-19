@@ -19,3 +19,9 @@
     cursor: pointer;
     /* Add any other styling you desire for suggestions */
 }
+
+footer{
+    position:relative;
+    width:100%;
+    top:3.5em;
+}

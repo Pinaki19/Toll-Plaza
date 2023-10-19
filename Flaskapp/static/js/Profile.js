@@ -39,7 +39,15 @@ function show_user_content() {
 }
 document.addEventListener('DOMContentLoaded', function () {
     // Make a query to the URL and save the data in a variable
+    const options = {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        
+    };
+
     
+
     fetch('/load_recent_transactions')
         .then(response => response.json())
         .then(data => {
@@ -60,6 +68,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     const value = transaction.data.Amount - transaction.data.GlobalDiscount - transaction.data.Cupon + transaction.data.Gst;
                     const valueSpan = document.createElement('span');
 
+                    const dateTimeDiv = document.createElement('div');
+                    const transactionDateTime = new Date(transaction.DateTime);
+                    transactionDateTime.setMinutes(transactionDateTime.getMinutes() - 330);
+                    dateTimeDiv.textContent = transactionDateTime.toLocaleString('en-US', options); // Format date and time
                     // Add a plus sign and make it green for "Add Money," otherwise add a negative sign and make it red
                     if (transaction.data.Type === 'Add Money') {
                         valueSpan.innerHTML = `+ &#8377;${value.toFixed(2)}`; // Format to 2 decimal places
@@ -72,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Append the transaction details and value to the list item
                     listItem.appendChild(transactionDiv);
                     listItem.appendChild(valueSpan);
-
+                    listItem.appendChild(dateTimeDiv);
                     // Append the list item to the list group
                     listGroup.appendChild(listItem);
                 });
