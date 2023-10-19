@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, redirect, url_for, session, abort, send_file
+from flask import Flask, jsonify, request, render_template, redirect, url_for, session, abort, send_file, send_from_directory
 from flask_pymongo import PyMongo
 from pytz import timezone
 from flask_cors import CORS
@@ -9,7 +9,7 @@ from bson import ObjectId
 import json
 import io
 import pymongo
-
+import os
 import pyrebase
 
 
@@ -1240,7 +1240,6 @@ def get_user_queries():
     return jsonify({'queries': [], 'visited':True}), 404
 
 
-
 @app.get('/mark_visited')
 def mark_visited():
    mongo = PyMongo(
@@ -1268,6 +1267,11 @@ def mark_visited():
 def index():
   return render_template('Home.html')
     
+
+@app.get('/favicon.ico')
+def favicon():
+    return send_from_directory('./static',
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == "__main__":
     

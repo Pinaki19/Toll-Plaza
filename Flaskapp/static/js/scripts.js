@@ -297,12 +297,24 @@ function Go_profile() {
   location.href="/profile";
 }
 function Logout(){
-  var btn = document.getElementById('Login');
+  var btn = document.getElementById('Sign_up');
   if(btn){
     Go_Login();
-   
   }else{
-    confirm_logout();
+    logout();
+  }
+}
+
+async function logout() {
+  var result = confirm('You are about to log-out!');
+  if (result) {
+    let response = await fetch('/Log_out');
+    // Handle the response as needed
+    if (response.status === 200 && response.redirected) {
+      window.location.href = response.url;
+    } else {
+      alert("Log Out failed.");
+    }
   }
 }
 
