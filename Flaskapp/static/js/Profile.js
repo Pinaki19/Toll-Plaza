@@ -277,7 +277,7 @@ function Reset() {
             return;
         }
 
-        console.log("Sending new PIN:", newPin);
+        //console.log("Sending new PIN:", newPin);
 
         // Check if the entered PINs match and have 4 digits
         if (newPin.length === 4 && newPin === confirmPin) {
@@ -503,7 +503,7 @@ function modify_users() {
         success: function (response) {
             // Handle the success response here
             document.getElementById("CreateAdmin").dataset = false;
-            console.log("Admins created successfully:", response);
+            //console.log("Admins created successfully:", response);
             var warningElement = document.getElementById("warning");
             warningElement.innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
                 ${response.message}
@@ -553,7 +553,7 @@ function delete_admin() {
         success: function (response) {
             // Handle the success response here
             document.getElementById("DeleteAdmin").dataset = false;
-            console.log("Admins deleted successfully:", response);
+            //console.log("Admins deleted successfully:", response);
             var warningElement = document.getElementById("warning2");
             warningElement.innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
                 ${response.message}
@@ -748,6 +748,7 @@ function change_Discounts(){
                     input.value = currentRate;
                     input.className = "form-control"; // You can add Bootstrap classes for styling
                     input.min = 1;
+                    input.max=100;
                     // Create a span to display the original value
                     const container2parent = document.createElement("td");
                     container2parent.style.paddingLeft = "2em";
@@ -802,9 +803,10 @@ function change_Discounts(){
 
                     input.addEventListener("input", (event) => {
                         // Ensure the input is a valid positive number
+
                         const newValue = parseFloat(event.target.value);
                         if (event.target.value.length>2){
-                            event.target.value=100;
+                            event.target.value='100';
                         }
                         else if (isNaN(newValue) || newValue <= 0) {
                             event.target.value = '';
@@ -813,8 +815,10 @@ function change_Discounts(){
                             $('#proceedbutton5').prop('disabled', true);
                         } else {
                             $('#proceedbutton5').prop('disabled', false);
-                            currentData[index][1] = newValue;
+                            const Value = parseFloat(event.target.value);
+                            currentData[index][1] = Value;
                         }
+                        
                       
                     });
 
@@ -890,7 +894,7 @@ function change_discount_rate(){
     if(newcuponRate.length==0||cuponRate<=0||cuponRate>100){
         cuponRate=0;
     }
-    console.log(Rate,currentData,couponName,cuponRate);
+    //console.log(Rate,currentData,couponName,cuponRate);
     const passcode=document.getElementById('passcode5').value;
     if(passcode.length!=4||isNaN(parseInt(passcode))){
         return;
@@ -902,7 +906,7 @@ function change_discount_rate(){
         NewRate:cuponRate,
         TollRate: convertToKeyValuePairs(currentData)
     }
-    console.log(payload);
+    //console.log(payload);
     var warningElement = document.getElementById("warnDiscountchange");
     $.ajax({
         url: '/modify_discounts',
@@ -910,7 +914,7 @@ function change_discount_rate(){
         contentType: "application/json",
         data: JSON.stringify(payload),
         success: function (data) {
-            console.log(data.message);
+            //console.log(data.message);
             warningElement.innerHTML = `<div class="alert alert-success" role="alert" style="color:black;font-weight:500;text-align:center;">
                 ${data.message}</div>`;
             setTimeout(function () { location.reload() }, 1700);
@@ -936,8 +940,9 @@ function convertToKeyValuePairs(twoDList) {
             keyValuePairs[key] = value;
         }
     }
-
+    //console.log(keyValuePairs);
     return keyValuePairs;
+    
 }
 
 function getSuspendedEmails() {
