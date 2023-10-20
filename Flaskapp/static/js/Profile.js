@@ -806,7 +806,9 @@ function change_Discounts(){
 
                         const newValue = parseFloat(event.target.value);
                         if (event.target.value.length>2){
+                            $('#proceedbutton5').prop('disabled', false);
                             event.target.value='100';
+                            currentData[index][1] =100;
                         }
                         else if (isNaN(newValue) || newValue <= 0) {
                             event.target.value = '';
