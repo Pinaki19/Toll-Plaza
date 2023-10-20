@@ -803,8 +803,10 @@ function change_Discounts(){
                     input.addEventListener("input", (event) => {
                         // Ensure the input is a valid positive number
                         const newValue = parseFloat(event.target.value);
-
-                        if (isNaN(newValue) || newValue <= 0 ||newValue>=100) {
+                        if (event.target.value.length>2){
+                            event.target.value=100;
+                        }
+                        else if (isNaN(newValue) || newValue <= 0) {
                             event.target.value = '';
                             // Reset to the original value from originalDataArray
                             currentData[index][1] = originalData[index][1];
@@ -813,7 +815,7 @@ function change_Discounts(){
                             $('#proceedbutton5').prop('disabled', false);
                             currentData[index][1] = newValue;
                         }
-                        console.log(currentData);
+                      
                     });
 
                     // Append the input and original value to the container
