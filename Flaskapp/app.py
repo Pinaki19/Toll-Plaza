@@ -1033,11 +1033,16 @@ def update_toll_rate():
     try:
         # Get the JSON data from the request
         data = request.json
+        mongo3 = PyMongo(
+            app, uri=f"{app.config['MONGO_URI']}/Users")
+        db = mongo3.db
         object_id = ObjectId("6521102ce322c40be74694b2")
         key = db.AdminKey.find_one({"_id": object_id})['key']
         key2 = db.SuperAdminKey.find_one(
             {"_id": ObjectId("6521104419f8ab8aac121d6e")})['key']
         # Check if the provided password is correct (replace 'your_password' with your actual password)
+        user = db.UserData.find_one({'Email': session.get('email')})
+        
         passcode = int(data.get('Password'))
         if passcode == key2 and not user['IsSuperAdmin']:
             return jsonify({"message": "Wrong Passcode"}), 401
@@ -1072,6 +1077,7 @@ def update_toll_rate():
         return jsonify({"message": "Toll Rate updated successfully"}), 200
 
     except Exception as e:
+        print(e)
         return jsonify({"message": "Internal Server Error"}),500
 
 
@@ -1107,7 +1113,7 @@ def modify_discounts():
         
         if GlobalDiscount>=0 and GlobalDiscount<100:
             db.Discount.update_one({"_id": ObjectId('6510a31f5c761cfa640a15f0')}, {
-                '$set': {'discountRate':float(round(GlobalDiscount,2))}})
+                '$set': {'discountRate':int(GlobalDiscount)}})
         if len(Newcupon) > 8 and not Newcupon.isalnum():
             return jsonify({'message': 'Coupon should be atmost 8 characters and Alphanumeric.'}), 400
         elif len(Newcupon)>0 and len(Newcupon)<10 and Newrate>0 and Newrate<=100:

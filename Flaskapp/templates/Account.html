@@ -347,7 +347,7 @@
               
               <div  id="EnterNewRate" style="display: none;justify-self:left;text-align:left;padding:15px 10px 10px 0px;margin:0;">
                     <label for="Passcode5">Enter New Rate:</label>
-                    <input type="number" id="GlobalRate" name="GlobalRate" min="0" max='100' required placeholder="New Rate" value="" style="min-width:6em;">
+                    <input type="number" id="GlobalRate" name="GlobalRate" min="0" max='99' required placeholder="New Rate" value="" style="min-width:6em;">
               </div>
               
               <div id="NewCoupon" style="display: none;justify-self:center;text-align:left;padding:5px;padding-left:35px;margin:0;">
@@ -849,16 +849,29 @@ $("#cuponName").on("input", function() {
     }
 });
 
+$("#amount").on("input", function() {
+    var inputValue = $(this).val();
+    var amount=parseInt(inputValue);
+    if (amount>5000||inputValue.length>4) {
+        $(this).val(inputValue.slice(0, 4));
+    }else if(isNaN(amount)||amount<0){
+      $(this).val('');
+    }
+});
+
 $("#cuponRate").on("input", function() {
     $('#proceedbutton5').prop('disabled', false);
     var inputValue = $(this).val();
-    if (inputValue.length > 2) {
-        $(this).val(inputValue.slice(0, 2)); 
+    if (inputValue.length > 3) {
+        $(this).val(inputValue.slice(0, 3)); 
     }
     try{
       var val=parseInt($(this).val());
       if (val<=0 ||isNaN(val)) {
           $(this).val(''); 
+      }
+      else if(val>100){
+        $(this).val(100); 
       }
     }
       catch{
@@ -870,8 +883,8 @@ $("#cuponRate").on("input", function() {
 $("#GlobalRate").on("input", function() {
     $('#proceedbutton5').prop('disabled', false);
     var inputValue = $(this).val();
-    if (inputValue.length > 3) {
-        $(this).val(inputValue.slice(0, 3)); 
+    if (inputValue.length > 2) {
+        $(this).val(inputValue.slice(0, 2)); 
     }
     try{
       var val=parseInt($(this).val());
@@ -879,7 +892,7 @@ $("#GlobalRate").on("input", function() {
           $(this).val(''); 
       }
       else if(val>100){
-        $(this).val(100); 
+        $(this).val(99); 
       }
     }
       catch{
