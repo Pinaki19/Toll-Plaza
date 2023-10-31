@@ -5,5 +5,5 @@ pyrebase4  # Use the appropriate version of Pyrebase
 pytz==2022.5
 flask-cors # Use the appropriate version of Flask-CORS
 flask-session  # Use the appropriate version of Flask-Session
-requests
+requests==2.30.0
 pymongo==4.5.0  # Use the appropriate version of PyMongo
