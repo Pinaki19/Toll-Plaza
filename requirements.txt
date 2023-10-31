@@ -1,4 +1,4 @@
-Flask
+Flask==3.0.0
 gunicorn
 flask-pymongo  # Use the appropriate version of Flask-PyMongo
 pyrebase4  # Use the appropriate version of Pyrebase
