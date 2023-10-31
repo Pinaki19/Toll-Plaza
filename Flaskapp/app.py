@@ -1273,7 +1273,7 @@ def mark_visited():
 
 @app.route('/', methods=['GET'])
 def index():
-  return render_template('Home.html')
+  return "<h1>HI</h1>"
     
 
 @app.get('/favicon.ico')
