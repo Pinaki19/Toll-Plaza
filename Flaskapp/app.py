@@ -41,16 +41,15 @@ mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/{database_name}")
 db = mongo.db
 app.config['SECRET_KEY'] = '$wX2RjLzA3bTkH1iGfSg4MnC5QoDpUqV8xYvZ9sE6uF7tIyPwN'
 
-# Use MongoDB for session storage
 app.config["SESSION_TYPE"] = "mongodb"
+
 # Set the MongoDB connection details for sessions
+app.config["SESSION_MONGODB"] = pymongo.MongoClient(
+    host= 'mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net',
+)
 
-app.config["SESSION_MONGODB"] = {
-    'db': 'UserSessions',
-    'collection': 'sessions',
-    'uri': 'mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net',
-}
-
+app.config["SESSION_MONGODB_DB"] = "UserSessions"
+app.config["SESSION_MONGODB_COLLECT"] = "sessions"
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
