@@ -94,7 +94,7 @@
 
             <!-- Call to Action-->
             <div class="card text-white bg-secondary my-5 py-3 text-center d-flex flex-column" style="justify-content:center;align-items:center;">
-                 <h3>Current Toll Rate</h3>
+                 <h3>Toll Rate</h3>
                 
                 <table border="1" >
                     <thead>
@@ -722,6 +722,13 @@ async function register(username, password, email, mobile, gender) {
     }
 
 
+$("#registrationNumber").on("input", function() {
+    var inputValue = $(this).val();
+    
+    if (inputValue.length > 14) {
+        $(this).val(inputValue.slice(0,14)); // Truncate to 14 digits
+    }
+});
     
 
     function show_hide2(){

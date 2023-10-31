@@ -32,7 +32,7 @@ auth = firebase.auth()
 IST = timezone('Asia/Kolkata')
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017"
+app.config["MONGO_URI"] = "mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net"
 app.config["TEMPLATES-AUTO-RELOAD"] = True
 
 database_name = "Users"
@@ -578,6 +578,8 @@ def check_login():
     }
     if 'email' in session:
         user = db.UserData.find_one({"Email": session.get('email')},projection)
+        if(not user):
+            abort(404)
         if user['Suspended']:
             session.pop('email')
             return jsonify({'code': 401, 'message': 'User Account is Suspended. Contact Us for more Info.'}), 401
