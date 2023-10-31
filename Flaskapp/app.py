@@ -44,10 +44,12 @@ app.config['SECRET_KEY'] = '$wX2RjLzA3bTkH1iGfSg4MnC5QoDpUqV8xYvZ9sE6uF7tIyPwN'
 # Use MongoDB for session storage
 app.config["SESSION_TYPE"] = "mongodb"
 # Set the MongoDB connection details for sessions
-app.config["SESSION_MONGODB"] = "mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net"
 
-app.config["SESSION_MONGODB_DB"] = "UserSessions"
-app.config["SESSION_MONGODB_COLLECT"] = "sessions"
+app.config["SESSION_MONGODB"] = {
+    'db': 'UserSessions',
+    'collection': 'sessions',
+    'uri': 'mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net',
+}
 
 
 class CustomJSONEncoder(json.JSONEncoder):
