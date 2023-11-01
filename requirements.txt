@@ -7,3 +7,4 @@ flask-cors # Use the appropriate version of Flask-CORS
 Flask-Session  # Use the appropriate version of Flask-Session
 requests==2.29
 pymongo==4.0  # Use the appropriate version of PyMongo
+pymongo[srv]
