@@ -7,6 +7,5 @@ flask-cors # Use the appropriate version of Flask-CORS
 Flask-Session  # Use the appropriate version of Flask-Session
 requests==2.29
 -e git+https://github.com/mongodb/mongo-python-driver.git#egg=pymongo
-bson==0.5.10
-bson.errors
+-e git+https://github.com/mongodb/mongo-python-driver.git#egg=bson
 pymongo[srv]
