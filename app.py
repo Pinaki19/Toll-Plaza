@@ -464,6 +464,8 @@ def login():
     mongo = PyMongo(app, uri=mongo_uri)
     # Simplified authentication (replace with your authentication logic)
     user = mongo.db.UserData.find_one({"Email": email})
+    if (not user):
+        abort(404)
     if (user["Suspended"]):
         return jsonify({'code': 401, 'message': 'User Account is Suspended. Contact Us for more Info.'}), 401
     try:
