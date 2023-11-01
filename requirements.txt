@@ -7,4 +7,5 @@ flask-cors # Use the appropriate version of Flask-CORS
 git+https://github.com/Pinaki19/flask-session.git
 requests==2.29
 pymongo==4.5.0
+pymongo==4.5.0
 pymongo[srv]
