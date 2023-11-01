@@ -584,13 +584,15 @@ def profile():
 
 @app.route('/Check_login', methods=['GET'])
 def check_login():
-    projection = {
-        "_id": 0,          # Exclude _id field
-        "Gender": 0,
-        "Mobile": 0, "Defualt_Profile": 0, "Profile_Url": 0,"Queries":0,'Email':0,
-        "RegistrationDate": 0, "Address": 0, "image_id": 0, "transactions": 0,
-    }
-    if 'email' in session:
+    if 'email' not in session:
+        return jsonify({'message': "Not Found!"}), 404
+    else:
+        projection = {
+            "_id": 0,          # Exclude _id field
+            "Gender": 0,
+            "Mobile": 0, "Defualt_Profile": 0, "Profile_Url": 0, "Queries": 0, 'Email': 0,
+            "RegistrationDate": 0, "Address": 0, "image_id": 0, "transactions": 0,
+        }
         user = db.UserData.find_one({"Email": session.get('email')},projection)
         if(not user):
             abort(404)
@@ -599,9 +601,7 @@ def check_login():
             return jsonify({'code': 401, 'message': 'User Account is Suspended. Contact Us for more Info.'}), 401
         else:
             return jsonify({'message': session.get('email'),"User":user}), 200
-    else:
-        return jsonify({'message': "Not Found!"}), 404
-
+   
 @app.route('/get_toll_rate')
 def get_rate():
     mongo_uri = mongo_uri_temp.format(database_name='Toll_Rate')
