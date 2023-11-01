@@ -32,7 +32,6 @@ auth = firebase.auth()
 IST = timezone('Asia/Kolkata')
 
 app = Flask(__name__)
-
 database_name = "Users"
 
 
