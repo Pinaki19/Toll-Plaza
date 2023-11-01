@@ -6,4 +6,4 @@ pytz==2022.5
 flask-cors # Use the appropriate version of Flask-CORS
 flask-session==0.5.0  # Use the appropriate version of Flask-Session
 requests==2.29
-pymongo==4.5.0  # Use the appropriate version of PyMongo
+pymongo==3.5.1  # Use the appropriate version of PyMongo
