@@ -648,7 +648,7 @@ async function register(username, password, email, mobile, gender) {
     var content = JSON.stringify(requestBody);
 
     try {
-        const response = await fetch("http://127.0.0.1:8080/sign_up", {
+        const response = await fetch("/sign_up", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -701,7 +701,7 @@ async function register(username, password, email, mobile, gender) {
     async function sendEmailToLoginRoute(email,password) {
             try {
                 // Make a POST request to the Flask login route with the email
-                const response = await fetch("http://127.0.0.1:8080/login", {
+                const response = await fetch("/login", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -804,7 +804,7 @@ $("#registrationNumber").on("input", function() {
             };
             var content = JSON.stringify(requestBody);
 
-            let response = await fetch("http://127.0.0.1:8080/reset_password", {
+            let response = await fetch("/reset_password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
