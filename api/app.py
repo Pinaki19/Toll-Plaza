@@ -51,7 +51,7 @@ app.config["SESSION_TYPE"] = "mongodb"
 
 # Set the MongoDB connection details for sessions
 app.config["SESSION_MONGODB"] = pymongo.MongoClient(
-    host="mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/?ssl=true"
+    host="mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/"
 )
 
 app.config["SESSION_MONGODB_DB"] = "UserSessions"
@@ -1312,8 +1312,7 @@ def index():
 def favicon():
     return send_from_directory('./static',
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
-'''
+
 if __name__ == "__main__":
 
     app.run(port=8080)
-'''
