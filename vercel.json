@@ -2,14 +2,14 @@
     "version": 2,
     "builds": [
         {
-            "src": "./api/app.py",
-            "use": "@vercel/python"
+            "src": "*.py",
+            "use": "@liudonghua123/now-flask"
         }
     ],
     "routes": [
         {
-            "src": "/api/(.*)",
-            "dest": "/api"
+            "src": "(.*)",
+            "dest": "app.py"
         }
     ]
 }
