@@ -1,0 +1,14 @@
+{
+    "builds": [
+        {
+            "src": "Flaskapp/app.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "routes": [
+        {
+            "src": "./(.*)",
+            "dest": "Flaskapp/app.py"
+        }
+    ]
+}
