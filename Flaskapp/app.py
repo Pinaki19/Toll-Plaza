@@ -21,7 +21,7 @@ firebase_config = {
     'messagingSenderId': "62968749843",
     'appId': "1:62968749843:web:3bbe8560b1e73c0a3244e6",
     'measurementId': "G-E6EFBYWRML",
-    'databaseURL':'None'
+    'databaseURL': 'None'
 
 }
 
@@ -32,20 +32,26 @@ auth = firebase.auth()
 IST = timezone('Asia/Kolkata')
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net"
-app.config["TEMPLATES-AUTO-RELOAD"] = True
 
 database_name = "Users"
 
-mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/{database_name}")
+
+mongo_uri_temp = "mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/{database_name}?ssl=true"
+
+# Construct the actual MongoDB URI with the specified database name
+mongo_uri = mongo_uri_temp.format(database_name=database_name)
+
+# Initialize PyMongo with the constructed URI
+mongo = PyMongo(app, uri=mongo_uri)
 db = mongo.db
+
 app.config['SECRET_KEY'] = '$wX2RjLzA3bTkH1iGfSg4MnC5QoDpUqV8xYvZ9sE6uF7tIyPwN'
 
 app.config["SESSION_TYPE"] = "mongodb"
 
 # Set the MongoDB connection details for sessions
 app.config["SESSION_MONGODB"] = pymongo.MongoClient(
-    host= 'mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net',
+    host="mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/?ssl=true"
 )
 
 app.config["SESSION_MONGODB_DB"] = "UserSessions"
@@ -63,9 +69,11 @@ Session(app)
 CORS(app)
 
 
-mongo_for_gridfs = PyMongo(
-    app, uri=f"{app.config['MONGO_URI']}/{database_name}")
+app.config["MONGO_URI_FOR_GRIDFS"] = "mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/Users?ssl=true&retryWrites=true&w=majority"
+
+mongo_for_gridfs = PyMongo(app, uri=app.config["MONGO_URI_FOR_GRIDFS"])
 fs = gridfs.GridFS(mongo_for_gridfs.db)
+
 
 #----------------------- utility functions ----------------------------------------------------------------------
 
@@ -95,8 +103,8 @@ def format_vehicle_type_name(name):
         return name.capitalize()
 
 def get_cupon_discount_rate(val):
-    mongo3 = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
+    mongo_uri = mongo_uri_temp.format(database_name='Global_Discounts')
+    mongo3 = PyMongo(app, uri=mongo_uri)
     db = mongo3.db
     obj = db.Cupons.find()
     for item in obj:
@@ -106,7 +114,8 @@ def get_cupon_discount_rate(val):
 
 
 def get_gst_rate():
-    mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+    mongo_uri = mongo_uri_temp.format(database_name='Toll_Rate')
+    mongo2 = PyMongo(app, uri=mongo_uri)
     db = mongo2.db
     object_id = ObjectId("6511be0f6cae5e50b4f30e34")
     return db.GST.find_one({"_id": object_id}, {"_id": False})['rate']
@@ -152,10 +161,11 @@ def insert_payment_id(email, id):
             '$set': {'transactions': user['transactions']}})
     else:
         return
-    
+
 
 def get_toll_amount(vehicle, journey):
-    mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+    mongo_uri = mongo_uri_temp.format(database_name='Toll_Rate')
+    mongo2 = PyMongo(app, uri=mongo_uri)
     db = mongo2.db
     object_id = ObjectId("6510916ca24f1f9870537d5f")
     Rate_chart = db.Rate.find_one({"_id": object_id}, {"_id": False})
@@ -166,7 +176,8 @@ def get_toll_amount(vehicle, journey):
 
 
 def find_global_discount_rate():
-    mongo3 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
+    mongo_uri = mongo_uri_temp.format(database_name='Global_Discounts')
+    mongo3 = PyMongo(app, uri=mongo_uri)
     db = mongo3.db
     object_Id = ObjectId("6510a31f5c761cfa640a15f0")
     obj = db.Discount.find_one({"_id": object_Id}, {"_id": False})
@@ -241,7 +252,8 @@ def get_admins_from_mongodb():
 @app.get('/get_recent_transactions')
 def get_recent_transactions():
     email = session.get('email')
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/{database_name}")
+    mongo_uri = mongo_uri_temp.format(database_name='Users')
+    mongo = PyMongo(app, uri=mongo_uri)
     db = mongo.db
     # Query the UserWallets collection to get the list of transaction IDs
     user_wallet = db.UserWallets.find_one({'Email': email})
@@ -251,8 +263,8 @@ def get_recent_transactions():
 
         # Query the CompletedPayments collection to get transaction details
         recent_transactions = []
-        mongo = PyMongo(
-            app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+        mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+        mongo = PyMongo(app, uri=mongo_uri)
         db = mongo.db
         for transaction_id in transaction_ids:
             payment_doc = db.CompletedPayments.find_one(
@@ -309,10 +321,10 @@ def upload_image():
             email = session.get('email')
             db.UserData.update_one(
                 {"Email": email}, {"$set": {"image_id": file_id}})
-            
+
             db.UserData.update_one(
                 {"Email": email}, {"$set": {"Defualt_Profile": False}})
-            
+
 
             return jsonify({"success": True, "message": "File uploaded successfully."})
         else:
@@ -378,7 +390,7 @@ def remove_profile_image():
         return jsonify({"success": False, "message": str(e)})
 
 
-  
+
 @app.post('/Forgot_wallet_pass')
 def change_wallet_pass():
     recieved=request.get_json()
@@ -392,8 +404,8 @@ def change_wallet_pass():
         abort(404)
     db.UserWallets.update_one({'Email':email},{'$set':{'PIN':new_PIN^(turn_into_num(email)),'Default':False}})
     return jsonify({'success':True})
-    
-    
+
+
 @app.route('/Edit_account',methods=['POST'])
 def Edit_account():
     received = request.get_json()
@@ -411,26 +423,26 @@ def Edit_account():
         new_address = received.get('address')
         if (len(new_name) < 4 or len(new_name) > 40 or len(new_address)>100 or len(new_mobile)>=15):
             abort(404)
-        
+
         update_data = {}
         if new_name:
             update_data['Name'] = new_name
         if new_mobile:
             update_data['Mobile'] = new_mobile
-        
+
         update_data['Address'] = new_address
 
         # Update the user's data
         collection.update_one({'Email': email}, {'$set': update_data})
 
         return jsonify({'success':True}),200
-      
+
     else:
         abort(404)
 
 #-------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------------------
-  
+
 @app.route('/Find_user',methods=['POST'])
 def find_user():
   Recieved = request.get_json()
@@ -438,7 +450,7 @@ def find_user():
   if User:
     return jsonify({'success': True}), 200
   abort(404)
-  
+
 @app.route('/Get_user_details',methods=['POST'])
 def get_data():
   return find_user()
@@ -590,7 +602,8 @@ def check_login():
 
 @app.route('/get_toll_rate')
 def get_rate():
-    mongo2= PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+    mongo_uri = mongo_uri_temp.format(database_name='Toll_Rate')
+    mongo2 = PyMongo(app, uri=mongo_uri)
     db=mongo2.db
     object_id = ObjectId("6510916ca24f1f9870537d5f")
     return jsonify(db.Rate.find_one({"_id": object_id},{"_id":False}))
@@ -609,8 +622,8 @@ def get_discounts():
         return jsonify({'rate':rate})
     else:
         abort(404)
-      
-      
+
+
 @app.post('/Apply_coupon')
 def apply_cupon():
     data=request.get_json()
@@ -633,7 +646,9 @@ def apply_cupon():
             return abort(404)
 
         # Retrieve payment data from MongoDB using the payment ID
-        mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+        mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+        mongo = PyMongo(app, uri=mongo_uri)
+
         db = mongo.db
         collection = db.PaymentReferences
         payment_doc = collection.find_one({'_id': ObjectId(payment_id)})
@@ -656,15 +671,16 @@ def apply_cupon():
                 {"$set": {"data.Cupon": discount}}
             )
         return jsonify({'success': True, 'Data':payment_data})
-    
+
 #----------------------------------------------------------------------------------------------------------------
 #--------------------------------------------Payment Handler ----------------------------------------------------
-          
+
 @app.route('/pay', methods=['POST'])
 def pay():
     PaymentInfo = request.get_json()
     Type = PaymentInfo['Type']
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+    mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+    mongo = PyMongo(app, uri=mongo_uri)
     db = mongo.db
     if (Type == 'Toll Payment'):
         Vehicle = PaymentInfo['Vehicle_Type'].strip().lower()
@@ -681,7 +697,7 @@ def pay():
             cupon_applied = 'None'
         Global_disc = round(find_Global_discount_amount(Amount), 2)
         cupon_discount = round(calculate_cupon(Amount, cupon_applied), 2)
-        
+
         Data = {
             'Type': Type,
             'Amount': round(float(Amount), 2),
@@ -743,7 +759,8 @@ def complete_payment():
         return abort(404)
 
     # Retrieve payment data from MongoDB using the payment ID
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+    mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+    mongo = PyMongo(app, uri=mongo_uri)
     db = mongo.db
     collection=db.PaymentReferences
     payment_doc = collection.find_one({'_id': ObjectId(payment_id)})
@@ -765,7 +782,8 @@ def complete_payment():
         # Payment data has expired, delete the document and abort 404
         collection.delete_one({'_id': ObjectId(payment_id)})
         return abort(404)
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
+    mongo_uri = mongo_uri_temp.format(database_name='Users')
+    mongo = PyMongo(app, uri=mongo_uri)
     db = mongo.db
     wallet = db.UserWallets.find_one({'Email': session.get('email')},{'_id':False})
     if not wallet:
@@ -782,7 +800,9 @@ def get_payment_id():
         session.pop('PaymentRequested', '')
         payment_id = session.pop('PaymentID', '')
         # Create a MongoDB connection
-        mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+        mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+        mongo = PyMongo(app, uri=mongo_uri)
+
         db = mongo.db
         # Get the payment data from PaymentReferences
         payment_doc = db.PaymentReferences.find_one(
@@ -800,10 +820,12 @@ def get_payment_id():
 
             # Delete the payment data from PaymentReferences
             db.PaymentReferences.delete_one({'_id': ObjectId(payment_id)})
-            
+
         payment_data = payment_doc['data']
         if payment_data['Type']=='Add Money':
-            mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
+            mongo_uri = mongo_uri_temp.format(database_name='Users')
+            mongo = PyMongo(app, uri=mongo_uri)
+
             db = mongo.db
             email = session.get('email')
             user_wallet = db.UserWallets.find_one({'Email': email})
@@ -832,14 +854,15 @@ def update_wallet():
     if not PIN or not payment_id:
         return jsonify({'success': False, 'message': "Payment Id not found!"}),400
     # Create a MongoDB connection
-    mongo = PyMongo(app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
+    mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+    mongo = PyMongo(app, uri=mongo_uri)
     db = mongo.db
     # Get the payment data from PaymentReferences
     payment_doc = db.PaymentReferences.find_one(
         {'_id': ObjectId(payment_id)})
     payment_data = payment_doc['data']
-    
-    mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Users")
+    mongo_uri = mongo_uri_temp.format(database_name='Users')
+    mongo2 = PyMongo(app, uri=mongo_uri)
     db = mongo2.db
     email = session.get('email')
     user_wallet = db.UserWallets.find_one({'Email': email})
@@ -867,9 +890,8 @@ def update_wallet():
 
 @app.get('/get_cupons')
 def get_cupon_names():
-   
-    mongo3 = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
+    mongo_uri = mongo_uri_temp.format(database_name='Global_Discounts')
+    mongo3 = PyMongo(app, uri=mongo_uri)
     db = mongo3.db
     obj = db.Cupons.find()
     for item in obj:
@@ -877,10 +899,10 @@ def get_cupon_names():
         data=list(item.items())
         data.sort(key=lambda a:a[0],reverse=True)
         break
-    
+
     return jsonify({'success':True,'data':data})
- 
- 
+
+
 @app.get('/load_recent_transactions')
 def load_recent_transactions():
     # Check if the user is logged in and their email is stored in the session
@@ -894,10 +916,10 @@ def load_recent_transactions():
             # Get the list of transactions from the user's data
             transactions = user_data['transactions']
 
-            # Connect to the PaymentDetails database
-            mongo_payment = PyMongo(
-                app, uri=f"{app.config['MONGO_URI']}/PaymentDetails")
-            db_payment = mongo_payment.db
+            
+            mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+            mongo4 = PyMongo(app, uri=mongo_uri)
+            db_payment = mongo4.db
 
             # Find the recent 5 transactions based on ReferenceNumber
             projection = {'_id': 0}
@@ -960,12 +982,12 @@ def make_admins():
         password=int(data['Password'])
     except:
         return jsonify({'message':"Wrong Passcode"}),401
-    
+
     object_id = ObjectId("6521104419f8ab8aac121d6e")
     key= db.SuperAdminKey.find_one({"_id": object_id})['key']
     if(password!=key):
         return jsonify({'message': "Wrong Passcode"}), 400
-   
+
     current_user_data = db.UserData.find_one({'Email': session.get('email')})
     if not current_user_data or not current_user_data.get("IsSuperAdmin"):
         return jsonify({"message": "Unauthorized Access"}), 401
@@ -983,7 +1005,7 @@ def make_admins():
         if email not in suspend:
             collection.update_one(
                 {"Email": email.lower()}, {"$set": {"IsAdmin": True}})
-        
+
     return jsonify({"message": "Users updated successfully"})
 
 
@@ -1012,7 +1034,7 @@ def delete_admin():
         password=int(data['Password'])
     except:
         return jsonify({'message':"Wrong Passcode"}),401
-    
+
     object_id = ObjectId("6521104419f8ab8aac121d6e")
     key = db.SuperAdminKey.find_one({"_id": object_id})['key']
     if (password != key):
@@ -1035,8 +1057,9 @@ def update_toll_rate():
     try:
         # Get the JSON data from the request
         data = request.json
-        mongo3 = PyMongo(
-            app, uri=f"{app.config['MONGO_URI']}/Users")
+        mongo_uri = mongo_uri_temp.format(database_name='Users')
+        mongo3 = PyMongo(app, uri=mongo_uri)
+        
         db = mongo3.db
         object_id = ObjectId("6521102ce322c40be74694b2")
         key = db.AdminKey.find_one({"_id": object_id})['key']
@@ -1044,7 +1067,7 @@ def update_toll_rate():
             {"_id": ObjectId("6521104419f8ab8aac121d6e")})['key']
         # Check if the provided password is correct (replace 'your_password' with your actual password)
         user = db.UserData.find_one({'Email': session.get('email')})
-        
+
         passcode = int(data.get('Password'))
         if passcode == key2 and not user['IsSuperAdmin']:
             return jsonify({"message": "Wrong Passcode"}), 401
@@ -1061,7 +1084,8 @@ def update_toll_rate():
                 return jsonify({"message": f"Invalid rate values for {format_vehicle_type_name(item['vehicleType'])}. Please ensure that single rate is less than return rate."}), 400
             if item['return'] >= item['monthly']:
                 return jsonify({"message": f"Invalid rate values for {format_vehicle_type_name(item['vehicleType'])}. Please ensure that return rate is less than monthly rate."}), 400
-        mongo2 = PyMongo(app, uri=f"{app.config['MONGO_URI']}/Toll_Rate")
+        mongo_uri = mongo_uri_temp.format(database_name='Toll_Rate')
+        mongo2 = PyMongo(app, uri=mongo_uri)
         db = mongo2.db
         collection=db.Rate
         # Update the MongoDB document based on the dataArray
@@ -1086,8 +1110,9 @@ def update_toll_rate():
 @app.post("/modify_discounts")
 def modify_discounts():
     data=request.get_json()
-    mongo = PyMongo(
-            app, uri=f"{app.config['MONGO_URI']}/Users")
+    mongo_uri = mongo_uri_temp.format(database_name='Users')
+    mongo = PyMongo(app, uri=mongo_uri)
+    
     db = mongo.db
     user = db.UserData.find_one({'Email': session.get('email')})
     if not Check_User():
@@ -1104,15 +1129,15 @@ def modify_discounts():
             return jsonify({"message": "Wrong Passcode"}), 401
         if passcode != key and passcode != key2:
             return jsonify({"message": "Wrong Passcode"}), 401
+        mongo_uri = mongo_uri_temp.format(database_name='Global_Discounts')
+        mongo3 = PyMongo(app, uri=mongo_uri)
         
-        mongo3 = PyMongo(
-            app, uri=f"{app.config['MONGO_URI']}/Global_Discounts")
         db = mongo3.db
         GlobalDiscount=data.get('Global')
         Newcupon=data.get('NewCupon').lower()
         Newrate = data.get('NewRate')
         Tollrate=data.get('TollRate')
-        
+
         if GlobalDiscount>=0 and GlobalDiscount<100:
             db.Discount.update_one({"_id": ObjectId('6510a31f5c761cfa640a15f0')}, {
                 '$set': {'discountRate':int(GlobalDiscount)}})
@@ -1132,9 +1157,9 @@ def modify_discounts():
             else:
                 db.Cupons.update_one({"_id": ObjectId('6511c1e74b3276cf2afcf700')},
                                      {'$set': {key: int(Tollrate[key])}})
-        
+
         return jsonify({'message': 'Updates Sucessfull'}), 200
-    
+
     except Exception as e:
         return jsonify({"message": "Internal Server Error"}), 500
 
@@ -1146,8 +1171,9 @@ def make_query():
     email = data.get('email', '').lower()
     if 'email' in session and email!=session.get('email'):
         return jsonify({'message': 'Email Ids do not match! '}),400
-    mongo = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Queries")
+
+    mongo_uri = mongo_uri_temp.format(database_name='Queries')
+    mongo = PyMongo(app, uri=mongo_uri)
     db = mongo.db
     collection = db['User_Queries']
     data['Pending']=True
@@ -1155,8 +1181,9 @@ def make_query():
     # Insert the data into the MongoDB collection
     result = collection.insert_one(data)
     inserted_id = str(result.inserted_id)  # Convert the ObjectId to a string
-    mongo = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Users")
+    mongo_uri = mongo_uri_temp.format(database_name='Users')
+    mongo = PyMongo(app, uri=mongo_uri)
+    
     db = mongo.db
     print(data)
     user = db.UserData.find_one({'Email': email})
@@ -1169,7 +1196,7 @@ def make_query():
             # Update the user document in the database
         db.UserData.update_one({'Email': email}, {
             '$set': {'Queries': user['Queries']}})
-        
+
     return jsonify({'message': f'Query submitted successfully. Reference Id: {inserted_id}'}),200
 
 
@@ -1177,8 +1204,9 @@ def make_query():
 def get_queries():
     if not Check_User():
         return jsonify({"message": "Unauthorized Access!!"}), 401
-    mongo = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Queries")
+    mongo_uri = mongo_uri_temp.format(database_name='Queries')
+    mongo = PyMongo(app, uri=mongo_uri)
+    
     collection = mongo.db.User_Queries
     queries = list(collection.find({'Pending': True}))
     serialized_queries = []
@@ -1192,8 +1220,9 @@ def get_queries():
 def resolve_query():
     if not Check_User():
         return jsonify({"message": "Unauthorized Access!!"}), 401
-    mongo = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Queries")
+    mongo_uri = mongo_uri_temp.format(database_name='Queries')
+    mongo = PyMongo(app, uri=mongo_uri)
+   
     db = mongo.db
     collection = db['User_Queries']
     try:
@@ -1219,14 +1248,16 @@ def resolve_query():
 def get_user_queries():
     if 'email' not in session:
         return jsonify({'queries':[], 'visited': True})
-    mongo = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Users")
+    mongo_uri = mongo_uri_temp.format(database_name='Users')
+    mongo = PyMongo(app, uri=mongo_uri)
+    
     collection = mongo.db.UserData
     # Replace with how you retrieve the session email
     session_email = session.get('email','')
     # Find the user by session email
-    mongo2 = PyMongo(
-        app, uri=f"{app.config['MONGO_URI']}/Queries")
+    mongo_uri = mongo_uri_temp.format(database_name='Queries')
+    mongo2 = PyMongo(app, uri=mongo_uri)
+    
     queries_collection = mongo2.db.User_Queries
     user = collection.find_one({"Email": session_email})
     if user:
@@ -1242,7 +1273,7 @@ def get_user_queries():
                     "Message": query.get('message'),
                     "Response": query.get('Response')
                 })
-        
+
         return jsonify({'queries':user_queries,'visited':visited})
 
     return jsonify({'queries': [], 'visited':True}), 404
@@ -1250,13 +1281,14 @@ def get_user_queries():
 
 @app.get('/mark_visited')
 def mark_visited():
-   mongo = PyMongo(
-       app, uri=f"{app.config['MONGO_URI']}/Users")
+   mongo_uri = mongo_uri_temp.format(database_name='Users')
+   mongo = PyMongo(app, uri=mongo_uri)
+   
    collection = mongo.db.UserData
    session_email = session.get('email', '')
-
-   mongo2 = PyMongo(
-       app, uri=f"{app.config['MONGO_URI']}/Queries")
+   mongo_uri = mongo_uri_temp.format(database_name='Queries')
+   mongo2 = PyMongo(app, uri=mongo_uri)
+   
    queries_collection = mongo2.db.User_Queries
    user = collection.find_one({"Email": session_email})
    if user:
@@ -1269,12 +1301,12 @@ def mark_visited():
                 else:
                     break
    return jsonify({"message": "success"}),200
-   
+
 
 @app.route('/', methods=['GET'])
 def index():
-  return "<h1>HI</h1>"
-    
+  return render_template("Home.html")
+
 
 @app.get('/favicon.ico')
 def favicon():
@@ -1282,5 +1314,5 @@ def favicon():
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == "__main__":
-    
+
     app.run(port=8080,debug=True)
