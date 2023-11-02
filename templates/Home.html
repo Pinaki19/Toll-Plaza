@@ -539,7 +539,8 @@ var jsonData;
             document.addEventListener('DOMContentLoaded', function() {
                 check_login();
                 window.addEventListener('resize', function() {
-                location.reload();
+                        if(window.innerWidth>400)
+                                location.reload();
                 });
             });
 
