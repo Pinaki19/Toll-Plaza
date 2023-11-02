@@ -11,6 +11,7 @@ import io
 import pymongo
 import os
 import pyrebase
+from PIL import Image
 
 
 firebase_config = {
@@ -196,7 +197,7 @@ def Register_user(name, email, gender, mobile):
                     'Profile_Url': 'https://img.freepik.com/free-psd/3d-illustration-person-with-glasses_23-2149436185.jpg'})
   else:
     Recieved.update({"Defualt_Profile": False,
-                    'Profile_Url': '651808ba72d9dd5d64c4ebd1'})
+                    'Profile_Url': '6543ca5142a608c438fb697b'})
 
   Recieved.update(
       {'IsAdmin': False, "IsSuperAdmin": False,"Suspended":False, 'RegistrationDate': datetime.now(), 'Address': ' '})
@@ -306,28 +307,48 @@ def get_image(image_id):
         return jsonify({"success": False, "message": str(e)})
 
 
-
-
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
     try:
         # Get the uploaded file from the request
         uploaded_file = request.files['image']
+
         # Check if the file exists and is an allowed file type (e.g., image)
         if uploaded_file and allowed_file(uploaded_file.filename):
-            # Store the file in GridFS
-            file_id = fs.put(uploaded_file.read(),filename=uploaded_file.filename)
+            # Read the uploaded file
+            image_bytes = uploaded_file.read()
+
+            # Compress the image to a specific size limit (e.g., 2.5 MB)
+            max_file_size = 1 * 1024 * 1024  # 1.5 MB in bytes
+
+            # Function to reduce the image quality while keeping dimensions the same
+            def compress_image(image, quality):
+                output = io.BytesIO()
+                image.save(output, format="JPEG", quality=quality)
+                return output.getvalue()
+
+            quality = 85  # You can adjust this value as needed
+
+            while len(image_bytes) > max_file_size:
+                image_bytes = compress_image(
+                    Image.open(io.BytesIO(image_bytes)), quality)
+                quality -= 5  # Reduce the quality in steps
+
+            # Store the compressed file in GridFS
+            file_id = fs.put(image_bytes, filename=uploaded_file.filename)
+
             email = session.get('email')
             db.UserData.update_one(
-                {"Email": email}, {"$set": {"image_id": file_id}})
+                {"Email": email}, {"$set": {"image_id": file_id}}
+            )
 
             db.UserData.update_one(
-                {"Email": email}, {"$set": {"Defualt_Profile": False}})
+                {"Email": email}, {"$set": {"Defualt_Profile": False}}
+            )
 
-
-            return jsonify({"success": True, "message": "File uploaded successfully."})
+            return jsonify({"success": True, "message": "File uploaded and compressed successfully."})
         else:
-          return jsonify({"success": False, "message": "Invalid file type or no file provided."})
+            return jsonify({"success": False, "message": "Invalid file type or no file provided."})
 
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
