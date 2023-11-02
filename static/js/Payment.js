@@ -50,7 +50,7 @@ function load_cards() {
 
 
 function get_card_url(cardtype){
-    return "/static/assets/icons/"+cardtype+".png";
+    return "/static/Assets/icons/"+cardtype+".png";
 }
 
 function detectCardType(number) {

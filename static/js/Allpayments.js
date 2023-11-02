@@ -17,7 +17,7 @@ async function Process_Toll_pay() {
         Journey: Journey,
         Vehicle_Number: Vehicle_Number
     };
-
+    console.log(data);
     try {
         // Send the POST request using await fetch
         const response = await fetch('/pay', {

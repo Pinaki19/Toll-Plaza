@@ -189,18 +189,18 @@
                                                 placeholder="Valid card number" class="form-control " required="required">
                                             <div class="input-group-append"> <span class="input-group-text text-muted" id="all_cards">
                                                         <i class="fab fa-cc-visa mx-1"  style="color:blue;"></i> 
-                                                        <img src="/static/assets/icons/rupay.png" alt="RuPay" class="mx-1" style="width: 40px; height: 30px;"> <!-- RuPay (Custom Icon/Image) -->
+                                                        <img src="/static/Assets/icons/rupay.png" alt="RuPay" class="mx-1" style="width: 40px; height: 30px;"> <!-- RuPay (Custom Icon/Image) -->
                                                         <i class="fab fa-cc-amex mx-1" style="color:#0394fc;"></i> 
                                                         <i class="fab fa-cc-jcb mx-1" style="color: #FF4500;"></i> <!-- JCB -->
                                                         <i class="fab fa-cc-interac mx-1" style="color: #FFD700;"></i> <!-- Interac -->
-                                                        <img src="/static/assets/icons/discover.png" alt="discover" class="mx-1" style="width: 40px; height: 30px;">
-                                                        <img src="/static/assets/icons/jcb.png" alt="JCB" class="mx-1" style="width: 40px; height: 30px;">
-                                                        <img src="/static/assets/icons/dankort.png" alt="Dankort" class="mx-1" style="width: 40px; height: 30px;">    
-                                                        <img src="/static/assets/icons/diners.png" alt="diners" class="mx-1" style="width: 40px; height: 30px;">
-                                                        <img src="/static/assets/icons/unionpay.png" alt="UnionPay" class="mx-1" style="width: 40px; height: 30px;"> <!-- UnionPay (Custom Icon/Image) -->
-                                                        <img src="/static/assets/icons/mastercard.png" alt="Mastercard" class="mx-1" style="width: 40px; height: 30px;"> <!-- Electron (Custom Icon/Image) -->
-                                                        <img src="/static/assets/icons/maestro.png" alt="UnionPay" class="mx-1" style="width: 40px; height: 30px;"> 
-                                                        <img src="/static/assets/icons/electron.png" alt="Electron" class="mx-1" style="width: 40px; height: 30px;"> <!-- Electron (Custom Icon/Image) -->
+                                                        <img src="/static/Assets/icons/discover.png" alt="discover" class="mx-1" style="width: 40px; height: 30px;">
+                                                        <img src="/static/Assets/icons/jcb.png" alt="JCB" class="mx-1" style="width: 40px; height: 30px;">
+                                                        <img src="/static/Assets/icons/dankort.png" alt="Dankort" class="mx-1" style="width: 40px; height: 30px;">    
+                                                        <img src="/static/Assets/icons/diners.png" alt="diners" class="mx-1" style="width: 40px; height: 30px;">
+                                                        <img src="/static/Assets/icons/unionpay.png" alt="UnionPay" class="mx-1" style="width: 40px; height: 30px;"> <!-- UnionPay (Custom Icon/Image) -->
+                                                        <img src="/static/Assets/icons/mastercard.png" alt="Mastercard" class="mx-1" style="width: 40px; height: 30px;"> <!-- Electron (Custom Icon/Image) -->
+                                                        <img src="/static/Assets/icons/maestro.png" alt="UnionPay" class="mx-1" style="width: 40px; height: 30px;"> 
+                                                        <img src="/static/Assets/icons/electron.png" alt="Electron" class="mx-1" style="width: 40px; height: 30px;"> <!-- Electron (Custom Icon/Image) -->
                                                     </span>
                                             </div>
                                         </div>
@@ -494,7 +494,7 @@ function Complete() {
 
         // Function to detect and update the card icons
     $(document).ready(function () {
-        $("#all_cards img[src='/static/assets/icons/rupay.png']").show();
+        $("#all_cards img[src='/static/Assets/icons/rupay.png']").show();
     // Function to detect and update the card icons
     function updateCardIcons(cardType) {
         // Hide all card icons except for Visa, Mastercard, and American Express
@@ -506,26 +506,26 @@ function Complete() {
         if (cardType === "visa") {
             $("#all_cards i.fa-cc-visa").show();
         } else if (cardType === "mastercard") {
-            $("#all_cards img[src='/static/assets/icons/mastercard.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/mastercard.png']").show();
         } else if (cardType === "amex") {
             $("#all_cards i.fa-cc-amex").show();
         } else if (cardType === "unionpay") { // Show UnionPay custom icon/image
-            $("#all_cards img[src='/static/assets/icons/unionpay.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/unionpay.png']").show();
         } else if (cardType === "rupay") { // Show RuPay custom icon/image
-            $("#all_cards img[src='/static/assets/icons/rupay.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/rupay.png']").show();
         } else if (cardType === "maestro") { // Show RuPay custom icon/image
-            $("#all_cards img[src='/static/assets/icons/maestro.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/maestro.png']").show();
         } else if (cardType === "jcb") { // Show RuPay custom icon/image
-            $("#all_cards img[src='/static/assets/icons/jcb.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/jcb.png']").show();
         } else if (cardType === "electron") { // Show Electron custom icon/image
-            $("#all_cards img[src='/static/assets/icons/rupay.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/rupay.png']").show();
         } else if (cardType === "dankort") { // Show Electron custom icon/image
-            $("#all_cards img[src='/static/assets/icons/dankort.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/dankort.png']").show();
         }
         else if (cardType === "diners") { // Show Electron custom icon/image
-            $("#all_cards img[src='/static/assets/icons/diners.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/diners.png']").show();
         } else if (cardType === "discover") { // Show Electron custom icon/image
-            $("#all_cards img[src='/static/assets/icons/discover.png']").show();
+            $("#all_cards img[src='/static/Assets/icons/discover.png']").show();
         } 
          else{
             $("#all_cards i").show();
