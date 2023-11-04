@@ -935,7 +935,7 @@ def load_recent_transactions():
     # Check if the user is logged in and their email is stored in the session
     if 'email' in session:
         user_email = session['email']
-        db_users =db
+        db_users = db
         # Find the user document by their email
         user_data = db_users.UserData.find_one({'Email': user_email})
 
@@ -943,7 +943,6 @@ def load_recent_transactions():
             # Get the list of transactions from the user's data
             transactions = user_data['transactions']
 
-            
             mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
             mongo4 = PyMongo(app, uri=mongo_uri)
             db_payment = mongo4.db
@@ -959,13 +958,20 @@ def load_recent_transactions():
                 ).limit(30).sort([('ReferenceNumber', -1)])
             )
 
-            # You now have the recent 5 transactions in the recent_transactions list
+            # 5 hours 30 minutes in minutes
+            ist_offset = timedelta(minutes=330)
+
+            # Add the IST offset to each transaction's DateTime field
+            for transaction in recent_transactions:
+                if 'DateTime' in transaction:
+                    transaction['DateTime'] += ist_offset
+
+            # You now have the recent transactions with IST-adjusted DateTime
             return jsonify({'success': True, 'transactions': recent_transactions})
         else:
             return jsonify({'success': False})
     else:
         return jsonify({'success': False, 'message': 'User not logged in'})
-
 #----------------------------------------- super admin------------------------------------------------------------
 
 @app.route('/users', methods=['GET'])
