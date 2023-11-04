@@ -70,8 +70,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const dateTimeDiv = document.createElement('div');
                     const transactionDateTime = new Date(transaction.DateTime);
-                    transactionDateTime.setMinutes(transactionDateTime.getMinutes() - 330);
-                    dateTimeDiv.textContent = transactionDateTime.toLocaleString('en-US', options); // Format date and time
+                    //transactionDateTime.setMinutes(transactionDateTime.getMinutes() - 330);
+                     // Format date and time
+                    const formattedDate = transactionDateTime.toLocaleString('en-US', {
+                        timeZone: 'Asia/Kolkata', // IST timezone
+                        
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        
+                    });
+                    dateTimeDiv.textContent = formattedDate;
                     // Add a plus sign and make it green for "Add Money," otherwise add a negative sign and make it red
                     if (transaction.data.Type === 'Add Money') {
                         valueSpan.innerHTML = `+ &#8377;${value.toFixed(2)}`; // Format to 2 decimal places
@@ -130,7 +138,7 @@ function fillModalBodyDummy(text) {
         const transactionDateTime = new Date(transactionData.DateTime);
 
         // Convert the date to IST (Indian Standard Time)
-        transactionDateTime.setMinutes(transactionDateTime.getMinutes() -330); // IST is UTC+5:30
+        //transactionDateTime.setMinutes(transactionDateTime.getMinutes() -330); // IST is UTC+5:30
 
         // Format the date as a string in IST
         const formattedDate = transactionDateTime.toLocaleString('en-US', {
