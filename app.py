@@ -1201,6 +1201,7 @@ def make_query():
     collection = db['User_Queries']
     data['Pending']=True
     data['Resolved']=False
+    data['Query_Time'] = datetime.now()
     # Insert the data into the MongoDB collection
     result = collection.insert_one(data)
     inserted_id = str(result.inserted_id)  # Convert the ObjectId to a string
@@ -1258,7 +1259,7 @@ def resolve_query():
         if query:
             # Mark the query as resolved
             collection.update_one({"_id": ObjectId(query_id)}, {
-                                  "$set": {"Pending": False, "Resolved": True, "Response": input_text}})
+                                  "$set": {"Pending": False, "Resolved": True, "Resolve_Time": datetime.now(), "Response": input_text}})
             return jsonify({'message': 'Query resolved successfully!'})
 
         return jsonify({'error': 'Query not found'}, 404)
@@ -1293,6 +1294,8 @@ def get_user_queries():
                 visited=False
             if query and query.get('Resolved'):
                 user_queries.append({
+                    "_id":str(query.get('_id')),
+                    "Time":query.get('Resolve_Time'),
                     "Message": query.get('message'),
                     "Response": query.get('Response')
                 })

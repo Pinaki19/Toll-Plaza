@@ -204,6 +204,13 @@ function loadPendingQueries() {
             var container = document.createElement('div');
             container.id="container-"+query._id;
             // Create and configure the email paragraph
+            var Referenceid = document.createElement('p');
+            Referenceid.style.padding = "0";
+            Referenceid.style.fontWeight="bold";
+            Referenceid.style.marginTop = "0";
+            Referenceid.style.marginBottom = "5px";
+            Referenceid.textContent = 'ReferenceID: ' + query._id;
+
             var emailParagraph = document.createElement('p');
             emailParagraph.style.padding = "0";
             emailParagraph.style.marginTop = "0";
@@ -237,6 +244,7 @@ function loadPendingQueries() {
             resolveButton.textContent = 'Resolve';
 
             // Append elements to the container div
+             container.appendChild(Referenceid);
             container.appendChild(emailParagraph);
             container.appendChild(messageParagraph);
             responseDiv.appendChild(responseTextarea);
@@ -368,6 +376,61 @@ function loadUserQueriesInModal() {
     dataType: 'json',
     success: function (data) {
       var modalBody = $('#NotificationsModalBody'); // Replace with the actual modal body element
+      let visited = data.visited;
+      if (!visited) {
+        document.getElementById("Help_notify").style.display = 'inline-block';
+        document.getElementById("Notification_notify").style.display = 'inline-block';
+      }
+      data = data.queries;
+      if (data.length > 0) {
+        New_notifications = true;
+        // Clear the modal body
+        modalBody.empty();
+
+        data.forEach(function (query) {
+          var id = query._id;
+          var time = query.Time;
+          var question = query.Message;
+          var response = query.Response;
+
+          // Create a container for each question and response
+          var container = $('<div>');
+
+          // Create elements for the ID, time, question, and response
+          var idElement = $('<p style="padding-bottom:6px;padding-top:0;margin:0;">').text('Query ID: ' + id);
+          var timeElement = $('<p style="padding-bottom:6px;padding-top:0;margin:0;">').text('Resolved On: ' + time);
+          var questionElement = $('<p style="padding-bottom:6px;padding-top:0;margin:0;">').text('Question: ' + question);
+          var responseElement = document.createElement('div');
+          responseElement.innerHTML = `<textarea style="margin:0;padding-top:3px;padding-bottom:3px;" class="form-control" readOnly>${response}</textarea> <hr style="padding:0;margin-top:8px;margin-bottom:8px;">`;
+
+          // Append the elements to the container
+          container.append(idElement);
+          container.append(timeElement);
+          container.append(questionElement);
+          container.append(responseElement);
+          // Append the container to the modal body
+          modalBody.append(container);
+        });
+
+      } else {
+        New_notifications = false;
+      }
+    },
+    error: function (error) {
+      console.error('Error fetching user queries:', error);
+      // Handle the error as needed
+    }
+  });
+}
+
+/*
+function loadUserQueriesInModal() {
+  $.ajax({
+    type: 'GET',
+    url: '/get_user_queries',
+    dataType: 'json',
+    success: function (data) {
+      var modalBody = $('#NotificationsModalBody'); // Replace with the actual modal body element
       let visited=data.visited;
       if(!visited){
         document.getElementById("Help_notify").style.display='inline-block';
@@ -407,6 +470,7 @@ function loadUserQueriesInModal() {
     }
   });
 }
+*/
 
 
 </script>
