@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const dateTimeDiv = document.createElement('div');
                     const transactionDateTime = new Date(transaction.DateTime);
-                    //transactionDateTime.setMinutes(transactionDateTime.getMinutes() - 330);
+                    transactionDateTime.setMinutes(transactionDateTime.getMinutes() +330);
                      // Format date and time
                     const formattedDate = transactionDateTime.toLocaleString('en-US', {
                         timeZone: 'Asia/Kolkata', // IST timezone
@@ -138,7 +138,7 @@ function fillModalBodyDummy(text) {
         const transactionDateTime = new Date(transactionData.DateTime);
 
         // Convert the date to IST (Indian Standard Time)
-        transactionDateTime.setMinutes(transactionDateTime.getMinutes() -330); // IST is UTC+5:30
+        transactionDateTime.setMinutes(transactionDateTime.getMinutes()+330); // IST is UTC+5:30
 
         // Format the date as a string in IST
         const formattedDate = transactionDateTime.toLocaleString('en-US', {
