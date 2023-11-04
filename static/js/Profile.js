@@ -70,7 +70,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const dateTimeDiv = document.createElement('div');
                     const transactionDateTime = new Date(transaction.DateTime);
-                    transactionDateTime.setMinutes(transactionDateTime.getMinutes() +330);
+                    
+
+                    //transactionDateTime.setMinutes(transactionDateTime.getMinutes() +330);
                      // Format date and time
                     const formattedDate = transactionDateTime.toLocaleString('en-US', {
                         timeZone: 'Asia/Kolkata', // IST timezone
@@ -134,23 +136,21 @@ function fillModalBodyDummy(text) {
             transactionType.style.color = '#de282b';
         }
         transactionType.style.textAlign='center';
-        // Create a new Date object from the provided DateTime string
-        const transactionDateTime = new Date(transactionData.DateTime);
+      
 
-        // Convert the date to IST (Indian Standard Time)
-        transactionDateTime.setMinutes(transactionDateTime.getMinutes()+330); // IST is UTC+5:30
-
-        // Format the date as a string in IST
-        const formattedDate = transactionDateTime.toLocaleString('en-US', {
+        var time = new Date(transactionData.DateTime);
+       // time.setMinutes(time.getMinutes() + 330);
+        const formattedDate = time.toLocaleString('en-US', {
             timeZone: 'Asia/Kolkata', // IST timezone
-            year: 'numeric',
+            year:'numeric',
             month: 'long',
             day: 'numeric',
             hour: 'numeric',
             minute: 'numeric',
             second: 'numeric'
-        });
 
+        });
+        
         // Create and append the element for the formatted date
         const transactionDate = document.createElement('p');
         transactionDate.textContent = `Transaction Date: ${formattedDate}`;
