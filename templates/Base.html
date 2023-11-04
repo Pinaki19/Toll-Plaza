@@ -389,7 +389,17 @@ function loadUserQueriesInModal() {
 
         data.forEach(function (query) {
           var id = query._id;
-          var time = query.Time;
+          var time = new Date(query.Time);
+          time.setMinutes(time.getMinutes() + 330);
+          const formattedDate = time.toLocaleString('en-US', {
+                        timeZone: 'Asia/Kolkata', // IST timezone
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                
+          });
+          console.log(formattedDate);
           var question = query.Message;
           var response = query.Response;
 
@@ -398,7 +408,7 @@ function loadUserQueriesInModal() {
 
           // Create elements for the ID, time, question, and response
           var idElement = $('<p style="padding-bottom:6px;padding-top:0;margin:0;">').text('Query ID: ' + id);
-          var timeElement = $('<p style="padding-bottom:6px;padding-top:0;margin:0;">').text('Resolved On: ' + time);
+          var timeElement = $('<p style="padding-bottom:6px;padding-top:0;margin:0;">').text('Resolved On: ' + formattedDate);
           var questionElement = $('<p style="padding-bottom:6px;padding-top:0;margin:0;">').text('Question: ' + question);
           var responseElement = document.createElement('div');
           responseElement.innerHTML = `<textarea style="margin:0;padding-top:3px;padding-bottom:3px;" class="form-control" readOnly>${response}</textarea> <hr style="padding:0;margin-top:8px;margin-bottom:8px;">`;
