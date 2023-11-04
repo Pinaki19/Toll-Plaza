@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request, render_template, redirect, url_for, session, abort, send_file, send_from_directory
 from flask_pymongo import PyMongo
 from pytz import timezone
-import pytz
 from flask_cors import CORS
 from datetime import datetime, timedelta
 from flask_session import Session
@@ -267,6 +266,7 @@ def get_recent_transactions():
         mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
         mongo = PyMongo(app, uri=mongo_uri)
         db = mongo.db
+        gmt_to_ist_offset = timedelta(seconds=19800)
         for transaction_id in transaction_ids:
             payment_doc = db.CompletedPayments.find_one(
                 {'_id': ObjectId(transaction_id)})
@@ -275,9 +275,8 @@ def get_recent_transactions():
                 transaction_type = transaction_data.get('Type', 'Unknown')
                 transaction_date = payment_doc.get('DateTime', '')
                 # Convert the GMT time to IST
-                gmt_time = transaction_date.replace(tzinfo=pytz.utc)
-                ist_time = gmt_time.astimezone(IST)
-                formatted_date = ist_time.strftime('%H:%M %d-%m')
+                gmt_time = transaction_date + gmt_to_ist_offset
+                formatted_date = gmt_time.strftime('%H:%M %d-%m')
                 
                 transaction_amount = transaction_data.get('Amount', 0)
                 gst = transaction_data.get('Gst', 0)

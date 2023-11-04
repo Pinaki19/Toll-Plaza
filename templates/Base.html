@@ -390,7 +390,7 @@ function loadUserQueriesInModal() {
         data.forEach(function (query) {
           var id = query._id;
           var time = new Date(query.Time);
-          time.setMinutes(time.getMinutes() + 330);
+          time.setMinutes(time.getMinutes() - 330);
           const formattedDate = time.toLocaleString('en-US', {
                         timeZone: 'Asia/Kolkata', // IST timezone
                         month: 'long',
