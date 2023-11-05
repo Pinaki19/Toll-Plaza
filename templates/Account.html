@@ -248,8 +248,13 @@
             <div class="modal-content" style="background:#fafae8;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="RecentModalLabel">All Transactions</h5>
+                    
+                  <input type="text" class="form-control" placeholder="Transactio  ID" id="Search_bar2" required style="width:50%">
+                <button type="submit" id="Search_btn2" onclick="search_transaction()" class="btn btn-secondary" style="position: relative; right:2em;"><i style="position: relative; bottom: 2px;" class="bi-search"></i></button>
+            
                 </div>
                 <p class="text-muted py-1 px-5" style="padding-bottom:0;margin:0;">Contact us with Transaction id, Incase of any issues</p>
+                
                 <div class="modal-body" id="RecentModalbody" style="padding:25px;padding-top:10px;">
                     
                 </div>
@@ -985,7 +990,11 @@ $("#changeDiscountsModal").on("hidden.bs.modal", function () {
    reset_modal3();
 });
     
-
+    
+$("#RecentModal").on("hidden.bs.modal", function () {
+   $('#Search_bar2').val('Transaction ID');
+});
+  
 </script>
 
 {% endblock scripts %}
