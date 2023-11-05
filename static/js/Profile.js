@@ -126,7 +126,8 @@ function fillModalBodyDummy(text) {
     // Function to fill the modal body with transaction details
     function fillModalBody(transactionData) {
         const modalBody = document.getElementById("RecentModalbody");
-
+        const dummy = document.createElement('p');
+        dummy.id = transactionData.ReferenceNumber.toLowerCase();
         // Create and append elements for transaction details
         const transactionType = document.createElement('p');
         transactionType.textContent = `Transaction Type: ${transactionData.data.Type}`;
@@ -136,7 +137,7 @@ function fillModalBodyDummy(text) {
             transactionType.style.color = '#de282b';
         }
         transactionType.style.textAlign='center';
-        transactionType.id = transactionData.ReferenceNumber.toLowerCase();
+        
 
         var time = new Date(transactionData.DateTime);
        // time.setMinutes(time.getMinutes() + 330);
@@ -169,6 +170,7 @@ function fillModalBodyDummy(text) {
         div.style.padding = '10px'; // Add padding to create some space around the content
         div.style.border ='1px solid #381c03';
         div.style.background="white";
+        div.append(dummy);
         div.appendChild(transactionType);
         div.appendChild(transactionDate);
         div.appendChild(priceBreakup);
