@@ -126,8 +126,7 @@ function fillModalBodyDummy(text) {
     // Function to fill the modal body with transaction details
     function fillModalBody(transactionData) {
         const modalBody = document.getElementById("RecentModalbody");
-        const dummy = document.createElement('p');
-        dummy.id = transactionData.ReferenceNumber.toLowerCase();
+        
         // Create and append elements for transaction details
         const transactionType = document.createElement('p');
         transactionType.textContent = `Transaction Type: ${transactionData.data.Type}`;
@@ -166,7 +165,7 @@ function fillModalBodyDummy(text) {
         
         // Append the elements to the modal body
         var div = document.createElement('div');
-        
+        div.id="none";
         div.style.padding = '10px'; // Add padding to create some space around the content
         div.style.border ='1px solid #381c03';
         div.style.background="white";
