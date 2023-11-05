@@ -100,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 var F=0;
                 alltransactions.forEach(transaction => {
+                    hashmap[String(transaction.ReferenceNumber)] = "Transaction_no"+String(F);
                     fillModalBody(transaction,F);
+                    F += 1;
                 });
             } else {
                 // Handle the case where there are no recent transactions
@@ -160,7 +162,7 @@ function fillModalBodyDummy(text) {
         const price = transactionData.data.Amount - transactionData.data.GlobalDiscount - transactionData.data.Cupon + transactionData.data.Gst;
         priceBreakup.textContent = `Net Amount: ${price.toFixed(2)}`;
         var div = document.createElement('div');
-        div.setAttribute('id', `${transactionData.ReferenceNumber}`);
+        div.setAttribute('id',"Transaction_no"+no);
         const transactionId = document.createElement('p');
         transactionId.textContent = `Transaction ID: ${transactionData.ReferenceNumber}`;
         
@@ -214,10 +216,7 @@ function processAddMoney() {
 
 async function process_add_money(amount) {
     event.preventDefault();
-    //$('#walletModal').hide();
-    // Create an object with the data you want to send to the /pay endpoint
-    //document.getElementById("WalletBody").innerHTML = ``
-
+    
     var data = {
         Type: "Add Money",
         Amount: amount

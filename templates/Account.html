@@ -3,6 +3,9 @@
 {% block Style_local %}
 <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/Accounts.css') }}">
 <script src="{{ url_for('static',filename='js/Profile.js') }}"></script>
+<script>
+  const hashmap = {};
+</script>
 {% endblock Style_local %}
 
 
@@ -997,10 +1000,12 @@ $("#RecentModal").on("hidden.bs.modal", function () {
 
 function search_transaction(){
     var id = $('#Search_bar2').val().trim();
-    var Id=id.toLowerCase();
-        var elem=document.getElementById(Id);
+    var Id=id;
+    console.log(hashmap);
+    console.log(hashmap[Id]);
+        var elem=document.getElementById(hashmap[Id]);
         if(elem){
-            location.href = "#" + Id;
+            location.href = "#"+hashmap[Id];
             found = window.find(Id); 
         }else{
             $('#Search_bar2').val('Not Found!');
