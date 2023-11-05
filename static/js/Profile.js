@@ -169,7 +169,6 @@ function fillModalBodyDummy(text) {
         div.style.padding = '10px'; // Add padding to create some space around the content
         div.style.border ='1px solid #381c03';
         div.style.background="white";
-        div.append(dummy);
         div.appendChild(transactionType);
         div.appendChild(transactionDate);
         div.appendChild(priceBreakup);
