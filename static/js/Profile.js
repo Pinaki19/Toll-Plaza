@@ -165,7 +165,7 @@ function fillModalBodyDummy(text) {
         
         // Append the elements to the modal body
         var div = document.createElement('div');
-        div.setAttribute('id',transactionData.ReferenceNumber.toLowerCase());
+        div.setAttribute('id', `${transactionData.ReferenceNumber}`);
         div.style.padding = '10px'; // Add padding to create some space around the content
         div.style.border ='1px solid #381c03';
         div.style.background="white";
