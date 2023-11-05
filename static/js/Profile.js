@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 var F=0;
                 alltransactions.forEach(transaction => {
-                    hashmap[String(transaction.ReferenceNumber)] = "Transaction_no"+String(F);
+                    
                     fillModalBody(transaction,F);
                     F += 1;
                 });
@@ -125,60 +125,57 @@ function fillModalBodyDummy(text) {
     modalBody.appendChild(transactionDiv);
 }
 
-    // Function to fill the modal body with transaction details
-    function fillModalBody(transactionData,no) {
-        const modalBody = document.getElementById("RecentModalbody");
-        
-        // Create and append elements for transaction details
-        const transactionType = document.createElement('p');
-        transactionType.textContent = `Transaction Type: ${transactionData.data.Type}`;
-        if (transactionData.data.Type==='Add Money'){
-            transactionType.style.color ='#43e66e';
-        }else{
-            transactionType.style.color = '#de282b';
-        }
-        transactionType.style.textAlign='center';
-        
+// Function to fill the modal body with transaction details
+function fillModalBody(transactionData, no) {
+    const modalBody = $("#RecentModalbody");
 
-        var time = new Date(transactionData.DateTime);
-       // time.setMinutes(time.getMinutes() + 330);
-        const formattedDate = time.toLocaleString('en-US', {
-            timeZone: 'Asia/Kolkata', // IST timezone
-            year:'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
+    // Create and append elements for transaction details
+    const transactionType = $("<p>", {
+        text: `Transaction Type: ${transactionData.data.Type}`,
+        css: {
+            color: transactionData.data.Type === 'Add Money' ? '#43e66e' : '#de282b',
+            textAlign: 'center',
+        },
+    });
 
-        });
-        
-        // Create and append the element for the formatted date
-        const transactionDate = document.createElement('p');
-        transactionDate.textContent = `Transaction Date: ${formattedDate}`;
-        
+    const time = new Date(transactionData.DateTime);
+    const formattedDate = time.toLocaleString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+    });
 
-        const priceBreakup = document.createElement('p');
-        const price = transactionData.data.Amount - transactionData.data.GlobalDiscount - transactionData.data.Cupon + transactionData.data.Gst;
-        priceBreakup.textContent = `Net Amount: ${price.toFixed(2)}`;
-        var div = document.createElement('div');
-        div.setAttribute('id',"Transaction_no"+no);
-        const transactionId = document.createElement('p');
-        transactionId.textContent = `Transaction ID: ${transactionData.ReferenceNumber}`;
-        
-        // Append the elements to the modal body
-        
-        div.style.padding = '10px'; // Add padding to create some space around the content
-        div.style.border ='1px solid #381c03';
-        div.style.background="white";
-        div.appendChild(transactionType);
-        div.appendChild(transactionDate);
-        div.appendChild(priceBreakup);
-        div.appendChild(transactionId);
-        
-        modalBody.appendChild(div);
-        
-    }
+    // Create and append the element for the formatted date
+    const transactionDate = $("<p>", {
+        text: `Transaction Date: ${formattedDate}`,
+    });
+
+    const price = transactionData.data.Amount - transactionData.data.GlobalDiscount - transactionData.data.Cupon + transactionData.data.Gst;
+    const priceBreakup = $("<p>", {
+        text: `Net Amount: ${price.toFixed(2)}`,
+    });
+
+    // Create the div element with the ID
+    const div = $("<div>", {
+        id: transactionData.ReferenceNumber,
+    }).css({
+        padding: '10px',
+        border: '1px solid #381c03',
+        background: 'white',
+    });
+
+    const transactionId = $("<p>", {
+        text: `Transaction ID: ${transactionData.ReferenceNumber}`,
+    });
+
+    // Append the elements to the modal body
+    div.append(transactionType, transactionDate, priceBreakup, transactionId);
+    modalBody.append(div);
+}
 
 
 
