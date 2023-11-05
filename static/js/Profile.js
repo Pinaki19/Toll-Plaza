@@ -136,7 +136,7 @@ function fillModalBodyDummy(text) {
             transactionType.style.color = '#de282b';
         }
         transactionType.style.textAlign='center';
-      
+        transactionType.id = transactionData.ReferenceNumber.toLowerCase();
 
         var time = new Date(transactionData.DateTime);
        // time.setMinutes(time.getMinutes() + 330);
@@ -154,7 +154,7 @@ function fillModalBodyDummy(text) {
         // Create and append the element for the formatted date
         const transactionDate = document.createElement('p');
         transactionDate.textContent = `Transaction Date: ${formattedDate}`;
-
+        
 
         const priceBreakup = document.createElement('p');
         const price = transactionData.data.Amount - transactionData.data.GlobalDiscount - transactionData.data.Cupon + transactionData.data.Gst;
@@ -162,10 +162,10 @@ function fillModalBodyDummy(text) {
 
         const transactionId = document.createElement('p');
         transactionId.textContent = `Transaction ID: ${transactionData.ReferenceNumber}`;
-
+        
         // Append the elements to the modal body
         var div = document.createElement('div');
-        div.id = transactionData.ReferenceNumber.toLowerCase();
+        
         div.style.padding = '10px'; // Add padding to create some space around the content
         div.style.border ='1px solid #381c03';
         div.style.background="white";
