@@ -98,9 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Append the list item to the list group
                     listGroup.appendChild(listItem);
                 });
-
+                var F=0;
                 alltransactions.forEach(transaction => {
-                    fillModalBody(transaction);
+                    fillModalBody(transaction,F);
                 });
             } else {
                 // Handle the case where there are no recent transactions
@@ -124,7 +124,7 @@ function fillModalBodyDummy(text) {
 }
 
     // Function to fill the modal body with transaction details
-    function fillModalBody(transactionData) {
+    function fillModalBody(transactionData,no) {
         const modalBody = document.getElementById("RecentModalbody");
         
         // Create and append elements for transaction details
@@ -159,13 +159,13 @@ function fillModalBodyDummy(text) {
         const priceBreakup = document.createElement('p');
         const price = transactionData.data.Amount - transactionData.data.GlobalDiscount - transactionData.data.Cupon + transactionData.data.Gst;
         priceBreakup.textContent = `Net Amount: ${price.toFixed(2)}`;
-
+        var div = document.createElement('div');
+        div.setAttribute('id', `${transactionData.ReferenceNumber}`);
         const transactionId = document.createElement('p');
         transactionId.textContent = `Transaction ID: ${transactionData.ReferenceNumber}`;
         
         // Append the elements to the modal body
-        var div = document.createElement('div');
-        div.setAttribute('id', `${transactionData.ReferenceNumber}`);
+        
         div.style.padding = '10px'; // Add padding to create some space around the content
         div.style.border ='1px solid #381c03';
         div.style.background="white";
