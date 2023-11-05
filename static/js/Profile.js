@@ -165,7 +165,7 @@ function fillModalBodyDummy(text) {
 
         // Append the elements to the modal body
         var div = document.createElement('div');
-
+        div.id = transactionData.ReferenceNumber.toLowerCase();
         div.style.padding = '10px'; // Add padding to create some space around the content
         div.style.border ='1px solid #381c03';
         div.style.background="white";
@@ -173,7 +173,7 @@ function fillModalBodyDummy(text) {
         div.appendChild(transactionDate);
         div.appendChild(priceBreakup);
         div.appendChild(transactionId);
-        div.id = transactionData.ReferenceNumber.toLowerCase();
+        
         modalBody.appendChild(div);
         
     }
@@ -973,16 +973,4 @@ function getActivatedEmails() {
     });
     //console.log(selectedEmails);
     return selectedEmails;
-}
-
-function search_transaction(){
-    var id = $('#Search_bar2').val().trim();
-    var Id=id.toLowerCase();
-        var elem=document.getElementById(Id);
-        if(elem){
-            location.href = "#" + Id;
-            found = window.find(Id); 
-        }else{
-            $('#Search_bar2').val('Not Found!');
-        }
 }
