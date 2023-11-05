@@ -174,6 +174,7 @@ function fillModalBody(transactionData, no) {
 
     // Append the elements to the modal body
     div.append(transactionType, transactionDate, priceBreakup, transactionId);
+    console.log(div);
     modalBody.append(div);
 }
 
