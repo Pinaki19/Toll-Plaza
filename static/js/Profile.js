@@ -321,6 +321,7 @@ function fillModalBody(transactionData, no) {
     const downloadButton = document.createElement("button");
     downloadButton.textContent = "Download";
     downloadButton.className = "btn btn-outline-primary";
+    /*
     downloadButton.addEventListener("click", async function () {
         await downloadTransactionAsPDF(transactionData);
     });
@@ -333,13 +334,13 @@ function fillModalBody(transactionData, no) {
 
     // Append the "Download" button to the container div
     buttonContainer.appendChild(downloadButton);
-
+    */
     // Append elements to the main div
     div.appendChild(transactionType);
     div.appendChild(transactionDate);
     div.appendChild(priceBreakup);
     div.appendChild(transactionId);
-    div.appendChild(buttonContainer);
+    div.appendChild(downloadButton);
 
     modalBody.appendChild(div);
 }
