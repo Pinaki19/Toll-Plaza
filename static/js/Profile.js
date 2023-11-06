@@ -279,17 +279,14 @@ function fillModalBodyDummy(text) {
 }
 
 // Function to fill the modal body with transaction details
-async function fillModalBody(transactionData, no) {
-    const modalBody = $("#RecentModalbody");
+function fillModalBody(transactionData, no) {
+    const modalBody = document.getElementById("RecentModalbody");
 
     // Create and append elements for transaction details
-    const transactionType = $("<p>", {
-        text: `Transaction Type: ${transactionData.data.Type}`,
-        css: {
-            color: transactionData.data.Type === 'Add Money' ? '#43e66e' : '#de282b',
-            textAlign: 'center',
-        },
-    });
+    const transactionType = document.createElement("p");
+    transactionType.textContent = `Transaction Type: ${transactionData.data.Type}`;
+    transactionType.style.color = transactionData.data.Type === 'Add Money' ? '#43e66e' : '#de282b';
+    transactionType.style.textAlign = 'center';
 
     const time = new Date(transactionData.DateTime);
     const formattedDate = time.toLocaleString('en-US', {
@@ -303,47 +300,47 @@ async function fillModalBody(transactionData, no) {
     });
 
     // Create and append the element for the formatted date
-    const transactionDate = $("<p>", {
-        text: `Transaction Date: ${formattedDate}`,
-    });
+    const transactionDate = document.createElement("p");
+    transactionDate.textContent = `Transaction Date: ${formattedDate}`;
 
     const price = transactionData.data.Amount - transactionData.data.GlobalDiscount - transactionData.data.Cupon + transactionData.data.Gst;
-    const priceBreakup = $("<p>", {
-        text: `Net Amount: ${price.toFixed(2)}`,
-    });
+    const priceBreakup = document.createElement("p");
+    priceBreakup.textContent = `Net Amount: ${price.toFixed(2)}`;
 
     // Create the div element with the ID
-    const div = $("<div>", {
-        id: transactionData.ReferenceNumber,
-    }).css({
-        padding: '10px',
-        border: '1px solid #381c03',
-        background: 'white',
-        position: 'relative', // Set position to relative
+    const div = document.createElement("div");
+    div.id = transactionData.ReferenceNumber;
+    div.style.padding = '10px';
+    div.style.border = '1px solid #381c03';
+    div.style.background = 'white';
+    div.style.position = 'relative'; // Set position to relative
+
+    const transactionId = document.createElement("p");
+    transactionId.textContent = `Transaction ID: ${transactionData.ReferenceNumber}`;
+
+    const downloadButton = document.createElement("button");
+    downloadButton.textContent = "Download";
+    downloadButton.addEventListener("click", async function () {
+        await downloadTransactionAsPDF(transactionData);
     });
 
-    const transactionId = $("<p>", {
-        text: `Transaction ID: ${transactionData.ReferenceNumber}`,
-    });
-    const downloadButton = $("<p>", {
-        text: "Download",
-        //class: "btn btn-outline-primary",
-        
-    });
     // Create a container div for positioning the button
-    /*const buttonContainer = $("<div>").css({
-        position: "absolute",
-        bottom: "10px",
-        right: "10px",
-    });*/
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.position = "absolute";
+    buttonContainer.style.bottom = "10px";
+    buttonContainer.style.right = "10px";
 
     // Append the "Download" button to the container div
-    //buttonContainer.append(downloadButton);
+    buttonContainer.appendChild(downloadButton);
 
-    // Append the container div to the main div
-    div.append(transactionType, transactionDate, priceBreakup, transactionId, downloadButton);
+    // Append elements to the main div
+    div.appendChild(transactionType);
+    div.appendChild(transactionDate);
+    div.appendChild(priceBreakup);
+    div.appendChild(transactionId);
+    div.appendChild(buttonContainer);
 
-    modalBody.append(div);
+    modalBody.appendChild(div);
 }
 
 
