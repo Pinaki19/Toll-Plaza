@@ -331,17 +331,17 @@ async function fillModalBody(transactionData, no) {
         
     });
     // Create a container div for positioning the button
-    const buttonContainer = $("<div>").css({
+    /*const buttonContainer = $("<div>").css({
         position: "absolute",
         bottom: "10px",
         right: "10px",
-    });
+    });*/
 
     // Append the "Download" button to the container div
     buttonContainer.append(downloadButton);
 
     // Append the container div to the main div
-    div.append(transactionType, transactionDate, priceBreakup, transactionId, buttonContainer);
+    div.append(transactionType, transactionDate, priceBreakup, transactionId, downloadButton);
 
     modalBody.append(div);
 }
