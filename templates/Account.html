@@ -537,9 +537,9 @@ async function downloadTransactionAsPDF(transactiondata) {
         font: helveticaFont,
         color: PDFLib.rgb(0, 0, 0),
     });
-    console.log(data);
 
     const time = new Date(DateTime);
+    time.setMinutes(time.getMinutes() -330);
     const formattedDate = time.toLocaleString('en-US', {
         timeZone: 'Asia/Kolkata',
         year: 'numeric',
@@ -550,7 +550,7 @@ async function downloadTransactionAsPDF(transactiondata) {
         second: 'numeric',
     });
     const now = new Date();
-
+  
     const formattedNow = now.toLocaleString('en-US', {
         timeZone: 'Asia/Kolkata',
         year: 'numeric',
