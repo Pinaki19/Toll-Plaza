@@ -320,6 +320,7 @@ function fillModalBody(transactionData, no) {
 
     const downloadButton = document.createElement("button");
     downloadButton.textContent = "Download";
+    downloadButton.className = "btn btn-outline-primary";
     downloadButton.addEventListener("click", async function () {
         await downloadTransactionAsPDF(transactionData);
     });
