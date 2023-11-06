@@ -415,6 +415,7 @@ function fillModalBody(transactionData, no) {
     transactionType.style.textAlign = 'center';
 
     const time = new Date(transactionData.DateTime);
+    time.setMinutes(time.getMinutes() -330);
     const formattedDate = time.toLocaleString('en-US', {
         timeZone: 'Asia/Kolkata',
         year: 'numeric',
