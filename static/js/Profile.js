@@ -338,7 +338,7 @@ async function fillModalBody(transactionData, no) {
     });*/
 
     // Append the "Download" button to the container div
-    buttonContainer.append(downloadButton);
+    //buttonContainer.append(downloadButton);
 
     // Append the container div to the main div
     div.append(transactionType, transactionDate, priceBreakup, transactionId, downloadButton);
