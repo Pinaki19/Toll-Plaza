@@ -279,7 +279,7 @@ function fillModalBodyDummy(text) {
 }
 
 // Function to fill the modal body with transaction details
-function fillModalBody(transactionData, no) {
+async function fillModalBody(transactionData, no) {
     const modalBody = $("#RecentModalbody");
 
     // Create and append elements for transaction details
@@ -327,7 +327,7 @@ function fillModalBody(transactionData, no) {
     });
     const downloadButton = $("<button>", {
         text: "Download",
-        class: "btn btn-outline-primary",
+        //class: "btn btn-outline-primary",
         click: async function () {
             await downloadTransactionAsPDF(transactionData);
         }
