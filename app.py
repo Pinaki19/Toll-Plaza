@@ -316,27 +316,25 @@ def upload_image():
     try:
         # Get the uploaded file from the request
         uploaded_file = request.files['image']
-
         # Check if the file exists and is an allowed file type (e.g., image)
         if uploaded_file and allowed_file(uploaded_file.filename):
             # Read the uploaded file
+            remove_profile_image()
             image_bytes = uploaded_file.read()
-
             # Compress the image to a specific size limit (e.g., 2.5 MB)
-            max_file_size = 0.5 * 1024 * 1024  # 1.5 MB in bytes
-
+            max_file_size = 1 * 1024 * 1024  # 1.5 MB in bytes
             # Function to reduce the image quality while keeping dimensions the same
             def compress_image(image, quality):
                 output = io.BytesIO()
                 image.save(output, format="JPEG", quality=quality)
                 return output.getvalue()
 
-            quality = 86  # You can adjust this value as needed
+            quality = 87  # You can adjust this value as needed
 
             while len(image_bytes) > max_file_size:
                 image_bytes = compress_image(
                     Image.open(io.BytesIO(image_bytes)), quality)
-                quality -= 2  # Reduce the quality in steps
+                quality -= 3  # Reduce the quality in steps
 
             # Store the compressed file in GridFS
             file_id = fs.put(image_bytes, filename=uploaded_file.filename)
@@ -388,6 +386,7 @@ def get_profile_image():
 
 @app.route('/remove_profile_image', methods=['POST'])
 def remove_profile_image():
+    print('in')
     try:
         # Get the user's email from the session or request
         email = session.get('email')
