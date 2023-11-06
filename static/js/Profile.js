@@ -114,6 +114,159 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error:', error);
         });
 });
+async function downloadTransactionAsPDF(transactiondata) {
+    const {
+        DateTime,
+        ReferenceNumber,
+        data,
+        email,
+    } = transactiondata;
+
+    // Create a new PDF document
+    const pdfDoc = await PDFLib.PDFDocument.create();
+
+    // Add a page to the document
+    const page = pdfDoc.addPage([600, 500]);
+
+    // Set up a font for text rendering
+    const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+    // Embed the favicon image (replace 'favicon.ico' with the actual image URL)
+    const imageBytes = await fetch('favicon.png').then((res) => res.arrayBuffer());
+    const image = await pdfDoc.embedPng(imageBytes);
+    page.drawImage(image, {
+        x: 100,
+        y: 420,
+        width: 50,
+        height: 50,
+    });
+
+    // Add the header with company name and contact email
+    page.drawText('Smooth Sailing Systems', {
+        x: 170,
+        y: 450,
+        size: 18,
+        font: helveticaFont,
+        color: PDFLib.rgb(0, 0, 0), // Black color
+    });
+
+    page.drawText(`Contact Email: ${email}`, {
+        x: 170,
+        y: 430,
+        size: 12,
+        font: helveticaFont,
+        color: PDFLib.rgb(0, 0, 0),
+    });
+
+    // Add an HR to separate the header and body
+    page.drawLine({
+        start: { x: 50, y: 410 },
+        end: { x: 550, y: 410 },
+        thickness: 1,
+        color: PDFLib.rgb(0, 0, 0),
+    });
+
+    page.drawText('Transaction Reciept', {
+        x: 210,
+        y: 380,
+        size: 16,
+        font: helveticaFont,
+        color: PDFLib.rgb(0, 0, 0), // Black color
+    });
+    // Add the email in the body
+    page.drawText(`User Email: ${email}`, {
+        x: 60,
+        y: 330,
+        size: 12,
+        font: helveticaFont,
+        color: PDFLib.rgb(0, 0, 0),
+    });
+    console.log(data);
+
+    const time = new Date(DateTime);
+    const formattedDate = time.toLocaleString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+    });
+    const now = new Date();
+
+    const formattedNow = now.toLocaleString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+    });
+    // Create a table for transaction data in the body
+    const table = [
+        ['Payment Type', data.Type],
+        ['Reference Number', ReferenceNumber],
+        ['Transaction Date & Time', formattedDate],
+        ['Amount', data.Amount.toString()],
+        ['Coupon Discount', data.Cupon.toString()],
+        ['Preapplied Discount', data.GlobalDiscount.toString()],
+        ['GST (Tax)', data.Gst.toString()],
+        ['Total', String((data.Amount - data.Cupon - data.GlobalDiscount + data.Gst).toFixed(2))],
+    ];
+
+    const tableX = 50;
+    const tableY = 310;
+    const cellMargin = 20;
+    const rowHeight = 20;
+    const colWidth = 200;
+
+    for (let i = 0; i < table.length; i++) {
+        for (let j = 0; j < table[i].length; j++) {
+            page.drawText(table[i][j], {
+                x: tableX + j * colWidth + cellMargin,
+                y: tableY - i * rowHeight - cellMargin,
+                size: 12,
+                font: helveticaFont,
+                color: PDFLib.rgb(0, 0, 0),
+            });
+        }
+    }
+
+    page.drawLine({
+        start: { x: 50, y: 50 },
+        end: { x: 550, y: 50 },
+        thickness: 1,
+        color: PDFLib.rgb(0, 0, 0),
+    });
+
+    // Add the footer
+    page.drawText('Contact us in case of any discrepancy', {
+        x: 80,
+        y: 35,
+        size: 10,
+        font: helveticaFont,
+        color: PDFLib.rgb(0, 0, 0),
+    });
+
+    page.drawText('At '+formattedNow.toString(), {
+        x: 390,
+        y: 35,
+        size: 10,
+        font: helveticaFont,
+        color: PDFLib.rgb(0, 0, 0),
+    });
+
+    // Serialize the PDF document to bytes
+    const pdfBytes = await pdfDoc.save();
+
+    // Convert the bytes to a Blob
+    const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+    // Create a save popup without automatic download
+    saveAs(pdfBlob, `${ReferenceNumber}.pdf`);
+}
 
 function fillModalBodyDummy(text) {
    
@@ -166,15 +319,32 @@ function fillModalBody(transactionData, no) {
         padding: '10px',
         border: '1px solid #381c03',
         background: 'white',
+        position: 'relative', // Set position to relative
     });
 
     const transactionId = $("<p>", {
         text: `Transaction ID: ${transactionData.ReferenceNumber}`,
     });
+    const downloadButton = $("<button>", {
+        text: "Download",
+        class: "btn btn-outline-primary",
+        click: async function () {
+            await downloadTransactionAsPDF(transactionData);
+        }
+    });
+    // Create a container div for positioning the button
+    const buttonContainer = $("<div>").css({
+        position: "absolute",
+        bottom: "10px",
+        right: "10px",
+    });
 
-    // Append the elements to the modal body
-    div.append(transactionType, transactionDate, priceBreakup, transactionId);
-   
+    // Append the "Download" button to the container div
+    buttonContainer.append(downloadButton);
+
+    // Append the container div to the main div
+    div.append(transactionType, transactionDate, priceBreakup, transactionId, buttonContainer);
+
     modalBody.append(div);
 }
 

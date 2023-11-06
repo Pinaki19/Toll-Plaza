@@ -1,6 +1,10 @@
 {% extends "Base.html" %}
 {% block title %}<title>Profile Page</title>{% endblock title %}
 {% block Style_local %}
+
+<script src="https://unpkg.com/pdf-lib"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
 <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/Accounts.css') }}">
 <script src="{{ url_for('static',filename='js/Profile.js') }}"></script>
 
@@ -1020,8 +1024,6 @@ function show() {
         $('#Search_bar2').val("Not Found!");
     }
 }
-
-
 
 </script>
 

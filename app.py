@@ -1348,7 +1348,13 @@ def index():
 def favicon():
     return send_from_directory('./static',
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    
+
+@app.route('/favicon.png')
+def favicon_png():
+    return send_from_directory('./static', 'favicon.png', mimetype='image/png')
 
 if __name__ == "__main__":
 
     app.run(port=8080)
+
