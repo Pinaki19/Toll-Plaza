@@ -323,7 +323,7 @@ def upload_image():
             image_bytes = uploaded_file.read()
 
             # Compress the image to a specific size limit (e.g., 2.5 MB)
-            max_file_size = 1 * 1024 * 1024  # 1.5 MB in bytes
+            max_file_size = 0.5 * 1024 * 1024  # 1.5 MB in bytes
 
             # Function to reduce the image quality while keeping dimensions the same
             def compress_image(image, quality):
@@ -331,12 +331,12 @@ def upload_image():
                 image.save(output, format="JPEG", quality=quality)
                 return output.getvalue()
 
-            quality = 85  # You can adjust this value as needed
+            quality = 86  # You can adjust this value as needed
 
             while len(image_bytes) > max_file_size:
                 image_bytes = compress_image(
                     Image.open(io.BytesIO(image_bytes)), quality)
-                quality -= 5  # Reduce the quality in steps
+                quality -= 2  # Reduce the quality in steps
 
             # Store the compressed file in GridFS
             file_id = fs.put(image_bytes, filename=uploaded_file.filename)
