@@ -325,12 +325,10 @@ async function fillModalBody(transactionData, no) {
     const transactionId = $("<p>", {
         text: `Transaction ID: ${transactionData.ReferenceNumber}`,
     });
-    const downloadButton = $("<button>", {
+    const downloadButton = $("<p>", {
         text: "Download",
         //class: "btn btn-outline-primary",
-        click: async function () {
-            await downloadTransactionAsPDF(transactionData);
-        }
+        
     });
     // Create a container div for positioning the button
     const buttonContainer = $("<div>").css({
