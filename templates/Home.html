@@ -538,8 +538,9 @@ var jsonData;
             
             document.addEventListener('DOMContentLoaded', function() {
                 check_login();
+                    var isMobile = Math.min(window.screen.width, window.screen.height) < 768 || navigator.userAgent.indexOf("Mobi") > -1;
                 window.addEventListener('resize', function() {
-                        if(window.innerWidth>400)
+                        if(!isMobile)
                                 location.reload();
                 });
             });
