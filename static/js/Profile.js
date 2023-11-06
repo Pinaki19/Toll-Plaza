@@ -318,9 +318,9 @@ function fillModalBody(transactionData, no) {
     const transactionId = document.createElement("p");
     transactionId.textContent = `Transaction ID: ${transactionData.ReferenceNumber}`;
 
-    const downloadButton = document.createElement("button");
+    const downloadButton = document.createElement("p");
     downloadButton.textContent = "Download";
-    downloadButton.className = "btn btn-outline-primary";
+    //downloadButton.className = "btn btn-outline-primary";
     /*
     downloadButton.addEventListener("click", async function () {
         await downloadTransactionAsPDF(transactionData);
