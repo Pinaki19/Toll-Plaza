@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, redirect, url_for, session, abort, send_file, send_from_directory
+from flask import Flask, jsonify, request, render_template,json, redirect, url_for, session, abort, send_file, send_from_directory
 from flask_pymongo import PyMongo
 from pytz import timezone
 from flask_cors import CORS
@@ -23,7 +23,6 @@ firebase_config = {
     'appId': "1:62968749843:web:3bbe8560b1e73c0a3244e6",
     'measurementId': "G-E6EFBYWRML",
     'databaseURL': 'None'
-
 }
 
 firebase = pyrebase.initialize_app(firebase_config)
@@ -1352,6 +1351,20 @@ def favicon():
 @app.route('/favicon.png')
 def favicon_png():
     return send_from_directory('./static', 'favicon.png', mimetype='image/png')
+
+# -------------------------------------------------------------------------------------------------------------------
+# ---------------------------------admin only request--------------------------------------------------------------
+@app.get('/get/<string:id>')
+def get_user(id):
+    if not Check_User():
+        return jsonify({"message":"Unauthorized access!!"}),401
+    mongo_uri = mongo_uri_temp.format(database_name='PaymentDetails')
+    mongo = PyMongo(app, uri=mongo_uri)
+    collection = mongo.db.CompletedPayments
+    data = collection.find_one({"_id": ObjectId(id)}, {"_id": False, "expiration_time":False})
+    if not data:
+        return jsonify({"message":"No Records Found!!"})
+    return jsonify(data)
 
 if __name__ == "__main__":
 
