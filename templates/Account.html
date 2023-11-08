@@ -736,7 +736,19 @@ function editProfile() {
     document.head.appendChild(headeradd);
 }
 
+function formatTime(time){
+  const transactionDateTime = new Date(time);
 
+  transactionDateTime.setMinutes(transactionDateTime.getMinutes() - 330);
+  // Format date and time
+  const formattedDate = transactionDateTime.toLocaleString('en-US', {
+    timeZone: 'Asia/Kolkata', // IST timezone
+    month: 'long',
+    day: 'numeric',
+
+  });
+  return formattedDate;
+}
 
 function Save_data() {
   // Retrieve the edited name, address, and mobile number

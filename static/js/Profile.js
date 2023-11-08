@@ -46,8 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
         
     };
 
-    
-
     fetch('/load_recent_transactions')
         .then(response => response.json())
         .then(data => {
@@ -69,19 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const valueSpan = document.createElement('span');
 
                     const dateTimeDiv = document.createElement('div');
-                    const transactionDateTime = new Date(transaction.DateTime);
-                    
-
-                    transactionDateTime.setMinutes(transactionDateTime.getMinutes() -330);
-                     // Format date and time
-                    const formattedDate = transactionDateTime.toLocaleString('en-US', {
-                        timeZone: 'Asia/Kolkata', // IST timezone
-                        
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        
-                    });
-                    dateTimeDiv.textContent = formattedDate;
+                    dateTimeDiv.textContent = formatTime(transaction.DateTime);
                     // Add a plus sign and make it green for "Add Money," otherwise add a negative sign and make it red
                     if (transaction.data.Type === 'Add Money') {
                         valueSpan.innerHTML = `+ &#8377;${value.toFixed(2)}`; // Format to 2 decimal places
