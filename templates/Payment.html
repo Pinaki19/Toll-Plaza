@@ -10,7 +10,8 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="{{ url_for('static',filename='js/Payment.js') }}"></script>
     <script src="{{ url_for('static',filename='js/Allpayments.js') }}"></script>
-    
+    <script src="https://unpkg.com/pdf-lib"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/Payment.css') }}">
     <style>
        
@@ -269,7 +270,7 @@
                                 {%else%}
                                         <p id="otp-input" ></p>
                                         <p id="submit"></p>
-                                        <p class="text-muted"> You are not Logged in, Wallet nou usable. Use card payment or Log In Instead! </p>
+                                        <p class="text-muted"> You are not Logged in, Wallet not usable. Use card payment or Log In Instead! </p>
                                 {%endif%}
                                 </div>
                                 
@@ -410,7 +411,13 @@
                 success: function (data) {
                     //console.log('AJAX success:', data);
                     // Update the payment reference in the success content
-                    $('#Payment_id').text('Reference No: ' + data.message);
+                    var message= data.message;
+                    if(!data.Login){
+                        message = message + "   As You are not Logged in, a Receipt will be downloaded.";
+                        downloadTransactionAsPDF(data.data);
+                    }
+                       
+                    $('#Payment_id').text('Reference No: ' + message);
                 },
                 error: function (error) {
                     console.log('AJAX error:', error);
@@ -638,7 +645,164 @@ function walletComplete() {
     
 }
 
-        </script>
+
+
+    async function downloadTransactionAsPDF(transactiondata) {
+        const {
+            DateTime,
+            ReferenceNumber,
+            data,
+            email,
+        } = transactiondata;
+
+        // Create a new PDF document
+        const pdfDoc = await PDFLib.PDFDocument.create();
+
+        // Add a page to the document
+        const page = pdfDoc.addPage([600, 500]);
+
+        // Set up a font for text rendering
+        const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+        // Embed the favicon image (replace 'favicon.ico' with the actual image URL)
+        const imageBytes = await fetch('favicon.png').then((res) => res.arrayBuffer());
+        const image = await pdfDoc.embedPng(imageBytes);
+        page.drawImage(image, {
+            x: 100,
+            y: 420,
+            width: 50,
+            height: 50,
+        });
+
+        // Add the header with company name and contact email
+        page.drawText('Smooth Sailing Systems', {
+            x: 170,
+            y: 450,
+            size: 18,
+            font: helveticaFont,
+            color: PDFLib.rgb(0, 0, 0), // Black color
+        });
+
+        page.drawText(`Contact Email: smoothsailingsystems@gmail.com`, {
+            x: 170,
+            y: 430,
+            size: 12,
+            font: helveticaFont,
+            color: PDFLib.rgb(0, 0, 0),
+        });
+
+        // Add an HR to separate the header and body
+        page.drawLine({
+            start: { x: 50, y: 410 },
+            end: { x: 550, y: 410 },
+            thickness: 1,
+            color: PDFLib.rgb(0, 0, 0),
+        });
+
+        page.drawText('Transaction Receipt', {
+            x: 210,
+            y: 380,
+            size: 16,
+            font: helveticaFont,
+            color: PDFLib.rgb(0, 0, 0), // Black color
+        });
+        // Add the email in the body
+        page.drawText(`User Email: ${email}`, {
+            x: 60,
+            y: 330,
+            size: 12,
+            font: helveticaFont,
+            color: PDFLib.rgb(0, 0, 0),
+        });
+
+        const time = new Date(DateTime);
+        time.setMinutes(time.getMinutes() - 330);
+        const formattedDate = time.toLocaleString('en-US', {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+        });
+        const now = new Date();
+
+        const formattedNow = now.toLocaleString('en-US', {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+        });
+        // Create a table for transaction data in the body
+        const table = [
+            ['Payment Type', data.Type],
+            ['Reference Number', ReferenceNumber],
+            ['Transaction Date & Time', formattedDate],
+            ['Amount', data.Amount.toString()],
+            ['Coupon Discount', data.Cupon.toString()],
+            ['Preapplied Discount', data.GlobalDiscount.toString()],
+            ['GST (Tax)', data.Gst.toString()],
+            ['Total', String((data.Amount - data.Cupon - data.GlobalDiscount + data.Gst).toFixed(2))],
+        ];
+
+        const tableX = 50;
+        const tableY = 310;
+        const cellMargin = 20;
+        const rowHeight = 20;
+        const colWidth = 200;
+
+        for (let i = 0; i < table.length; i++) {
+            for (let j = 0; j < table[i].length; j++) {
+                page.drawText(table[i][j], {
+                    x: tableX + j * colWidth + cellMargin,
+                    y: tableY - i * rowHeight - cellMargin,
+                    size: 12,
+                    font: helveticaFont,
+                    color: PDFLib.rgb(0, 0, 0),
+                });
+            }
+        }
+
+        page.drawLine({
+            start: { x: 50, y: 50 },
+            end: { x: 550, y: 50 },
+            thickness: 1,
+            color: PDFLib.rgb(0, 0, 0),
+        });
+
+        // Add the footer
+        page.drawText('Contact us in case of any discrepancy', {
+            x: 80,
+            y: 35,
+            size: 10,
+            font: helveticaFont,
+            color: PDFLib.rgb(0, 0, 0),
+        });
+
+        page.drawText('At ' + formattedNow.toString(), {
+            x: 390,
+            y: 35,
+            size: 10,
+            font: helveticaFont,
+            color: PDFLib.rgb(0, 0, 0),
+        });
+
+        // Serialize the PDF document to bytes
+        const pdfBytes = await pdfDoc.save();
+
+        // Convert the bytes to a Blob
+        const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+        // Create a save popup without automatic download
+        saveAs(pdfBlob, `${ReferenceNumber}.pdf`);
+    }
+
+
+</script>
 <script>
     var PaymentInfo = {{ PaymentInfo | tojson | safe }};
 </script>

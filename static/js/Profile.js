@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const transactionDateTime = new Date(transaction.DateTime);
                     
 
-                    //transactionDateTime.setMinutes(transactionDateTime.getMinutes() +330);
+                    transactionDateTime.setMinutes(transactionDateTime.getMinutes() -330);
                      // Format date and time
                     const formattedDate = transactionDateTime.toLocaleString('en-US', {
                         timeZone: 'Asia/Kolkata', // IST timezone
@@ -98,11 +98,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Append the list item to the list group
                     listGroup.appendChild(listItem);
                 });
-                var F=0;
+                
                 alltransactions.forEach(transaction => {
                     
-                    fillModalBody(transaction,F);
-                    F += 1;
+                    fillModalBody(transaction);
+                    
                 });
             } else {
                 // Handle the case where there are no recent transactions

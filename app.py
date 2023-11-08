@@ -687,6 +687,7 @@ def apply_cupon():
             return abort(404)
 
         # Extract payment data from the document
+        
         payment_data = payment_doc['data']
         if(payment_data['Type']=='Add Money'):
             abort(404)
@@ -870,9 +871,16 @@ def get_payment_id():
             else:
                 # Handle the case where the user's wallet document is not found
                 print("User not found")
-        return jsonify({"success": True, "message": str(payment_id)})
+        del payment_doc["expiration_time"]
+        payment_doc["ReferenceNumber"] = str(payment_doc["_id"])
+        del payment_doc["_id"]
+        payment_doc['email']=" Not Provided "
+        payment_doc['DateTime'] = datetime.now()
+        ist_offset = timedelta(minutes=330)
+        payment_doc['DateTime'] += ist_offset
+        return jsonify({"success": True, "message": str(payment_id),"data":payment_doc,"Login":'email' in session})
     else:
-        return jsonify({"success": False, "message": "Payment data not found"})
+        return jsonify({"success": False, "message": "Payment data not found", "data": {}, "Login": 'email' in session})
 
 
 @app.get('/update_user_wallet')
