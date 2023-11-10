@@ -1303,6 +1303,7 @@ def get_user_queries():
     
     queries_collection = mongo2.db.User_Queries
     user = collection.find_one({"Email": session_email})
+    ist_offset = timedelta(minutes=330)
     if user:
         User_Queries = user.get('Queries', [])[::-1]
         visited=True
@@ -1314,7 +1315,7 @@ def get_user_queries():
             if query and query.get('Resolved'):
                 user_queries.append({
                     "_id":str(query.get('_id')),
-                    "Time":query.get('Resolve_Time'),
+                    "Time":query.get('Resolve_Time')+ist_offset,
                     "Message": query.get('message'),
                     "Response": query.get('Response')
                 })
