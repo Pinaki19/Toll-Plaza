@@ -258,7 +258,7 @@ def get_recent_transactions():
     user_wallet = db.UserWallets.find_one({'Email': email})
 
     if user_wallet:
-        transaction_ids = user_wallet.get('Transactions', [])
+        transaction_ids = user_wallet.get('Transactions', [])[-10:]
 
         # Query the CompletedPayments collection to get transaction details
         recent_transactions = []
