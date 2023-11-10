@@ -159,6 +159,8 @@
                                 <p style="padding-bottom:4px;margin-bottom:0;">Check Wallet transactions, Add Money, Reset PIN.</p>
                                 {% if wallet.Default %}
                                 <p id="Default_pin" style="padding:0;margin:0;color:red;padding-bottom:5px;">Default wallet PIN is 1234. Please change it.</p>
+                                {% else %}
+                                <p id="Default_pin"></p>
                                 {% endif %}
                                 <!-- Input fields for new PIN and confirmation -->
                                 <div id="ResetPinFields" style="display: none;padding:5px;">
@@ -188,6 +190,8 @@
                                 <p style="padding-bottom:4px;margin-bottom:0;">Check Wallet transactions, Add Money, Reset PIN.</p>
                                 {% if wallet.Default %}
                                 <p id="Default_pin" style="padding:0;margin:0;color:red;padding-bottom:5px;">Default wallet PIN is 1234. Please change it.</p>
+                                {% else %}
+                                <p id="Default_pin"></p>
                                 {% endif %}
                                 <!-- Input fields for new PIN and confirmation -->
                                 <div id="ResetPinFields" style="display: none;padding:5px;">
