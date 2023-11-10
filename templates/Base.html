@@ -20,7 +20,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color:#000; ">
     <div class="container-fluid">
         <a href="/" class="navbar-brand">Toll System</a>
-        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <button aria-label="nav_link" type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
@@ -43,7 +43,7 @@
             <form class="d-flex" style="padding-right: 30px; position: relative;">
               <div class="input-group" style="padding-top: 5px; padding-right: 20px;">
                   <input type="text" class="form-control" placeholder="Search" onclick="suggest()"  oninput="suggest()" id="Search_bar" required>
-                <button type="submit" id="Search_btn" class="btn btn-secondary"><i style="position: relative; bottom: 2px;" class="bi-search"></i></button>
+                <button aria-label="Search button" type="submit" id="Search_btn" class="btn btn-secondary"><i style="position: relative; bottom: 2px;" class="bi-search"></i></button>
               </div>
             </form>
           </div>
