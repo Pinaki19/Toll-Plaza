@@ -44,7 +44,7 @@ mongo_uri = mongo_uri_temp.format(database_name=database_name)
 mongo = PyMongo(app, uri=mongo_uri)
 db = mongo.db
 
-app.config['SECRET_KEY'] = '$wX2RjLzA3bTkH1iGfSg4MnC5QoDpUqV8xYvZ9sE6uF7tIyPwN'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 app.config["SESSION_TYPE"] = "mongodb"
 
