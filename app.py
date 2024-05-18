@@ -35,7 +35,7 @@ app = Flask(__name__)
 database_name = "Users"
 
 
-mongo_uri_temp = //Redacted
+mongo_uri_temp = os.environ.get('MONGO_URI')
 
 # Construct the actual MongoDB URI with the specified database name
 mongo_uri = mongo_uri_temp.format(database_name=database_name)
@@ -50,7 +50,7 @@ app.config["SESSION_TYPE"] = "mongodb"
 
 # Set the MongoDB connection details for sessions
 app.config["SESSION_MONGODB"] = pymongo.MongoClient(
-   //Redacted
+   host=os.environ.get('HOST')
 )
 
 app.config["SESSION_MONGODB_DB"] = "UserSessions"
@@ -68,7 +68,7 @@ Session(app)
 CORS(app)
 
 
-app.config["MONGO_URI_FOR_GRIDFS"] = //Redacted
+app.config["MONGO_URI_FOR_GRIDFS"] = os.environ.get('GRIDFS')
 
 mongo_for_gridfs = PyMongo(app, uri=app.config["MONGO_URI_FOR_GRIDFS"])
 fs = gridfs.GridFS(mongo_for_gridfs.db)
