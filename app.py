@@ -35,7 +35,7 @@ app = Flask(__name__)
 database_name = "Users"
 
 
-mongo_uri_temp = "mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/{database_name}?ssl=true"
+mongo_uri_temp = //Redacted
 
 # Construct the actual MongoDB URI with the specified database name
 mongo_uri = mongo_uri_temp.format(database_name=database_name)
