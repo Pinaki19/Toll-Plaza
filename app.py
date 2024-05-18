@@ -50,7 +50,7 @@ app.config["SESSION_TYPE"] = "mongodb"
 
 # Set the MongoDB connection details for sessions
 app.config["SESSION_MONGODB"] = pymongo.MongoClient(
-    host="mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/"
+   //Redacted
 )
 
 app.config["SESSION_MONGODB_DB"] = "UserSessions"
@@ -68,7 +68,7 @@ Session(app)
 CORS(app)
 
 
-app.config["MONGO_URI_FOR_GRIDFS"] = "mongodb+srv://Pinaki_Toll_system:Pinaki_toll_6070@cluster0.wsag3nu.mongodb.net/Users?ssl=true&retryWrites=true&w=majority"
+app.config["MONGO_URI_FOR_GRIDFS"] = //Redacted
 
 mongo_for_gridfs = PyMongo(app, uri=app.config["MONGO_URI_FOR_GRIDFS"])
 fs = gridfs.GridFS(mongo_for_gridfs.db)
